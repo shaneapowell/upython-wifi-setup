@@ -1,0 +1,10 @@
+{
+    "urls": [
+        ["uwifisetup/__init__.py", "github:shaneapowell/upython-wifi-setup/uwifisetup/__init__.py"],
+        ["uwifisetup/setup.py",    "github:shaneapowell/upython-wifi-setup/uwifisetup/setup.py"],
+        ["uwifisetup/wifi.py",     "github:shaneapowell/upython-wifi-setup/uwifisetup/wifi.py"]
+    ],
+    "deps": [
+    ],
+    "version": "0.1"
+}

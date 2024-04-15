@@ -1,0 +1,64 @@
+{% args appName, appVersion, ssid, connectFunc %}
+{% include "/_uwifisetup/_top.html" %}
+
+<script>
+    function togglePasswordVisibility() {
+        var x = document.getElementById("password");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+</script>
+
+{% include "/_uwifisetup/_start.html" %}
+
+
+    <div class="wrapper -thin">
+
+        <div class="ta-center"><strong>{{ appName }}</strong></div>
+
+        {% set result = None %}
+        {% if connectFunc is not None %}
+            <small>Connecting...</small>
+            {% set result = connectFunc() %}
+            <pre>{{ result[1] }}</pre>
+        {% endif %}
+
+        {% if not result or not result[0] %}
+            <small>Connect To</small><br>
+            <pre>{{ ssid }}</pre>
+
+            <form method="post">
+
+                <input type="hidden" id="ssid" name="ssid" value="{{ ssid }}"/>
+
+                <p>
+                    <label for="password" class="field mb-zero">
+                        <input type="password" id="password" name="password" value=""/>
+                        <span class="label">Password</span>
+                    </label>
+                    <a class="fs-small" href="#" onclick="togglePasswordVisibility()">(Show/Hide Password)</a>
+                </p>
+
+                <button type="submit" class="button -block">Connect</button>
+
+            </form>
+
+        {% elif result and result[0] %}
+
+        <form action="/_uwifisetup/complete.html"  method="get">
+            <button class="button -block">Continue</button>
+        </form>
+
+        {% endif %}
+
+        <form action="/_uwifisetup/list_networks.html"  method="get">
+            <button class="button -block">Back</button>
+        </form>
+
+
+    </div>
+
+{% include "/_uwifisetup/_bottom.html" %}

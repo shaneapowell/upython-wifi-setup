@@ -1,0 +1,17 @@
+{% args appName, appVersion %}
+{% include "/_uwifisetup/_top.html" %}
+{% include "/_uwifisetup/_start.html" %}
+
+    <div class="wrapper -thin">
+
+        <div class="ta-center"><strong>{{ appName }}</strong></div>
+
+        <strong>Welcome.<br></brt> Time to setup your device WiFi</strong>
+
+        <form action="/_uwifisetup/list_networks.html">
+            <button type="submit" class="button -block">Setup Wifi</button>
+        </form>
+
+    </div>
+
+{% include "/_uwifisetup/_bottom.html" %}

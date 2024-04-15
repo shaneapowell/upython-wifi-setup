@@ -1,0 +1,57 @@
+{% args appName, appVersion, networksGen %}
+{% include "/_uwifisetup/_top.html" %}
+{% include "/_uwifisetup/_start.html" %}
+
+
+    <div class="wrapper -thin">
+
+        <div class="ta-center"><strong>{{ appName }}</strong></div>
+
+        <strong>Wifi Networks ...</strong>
+
+        <hr class="m-zero">
+
+            {% set networkCount = 0 %}
+
+            {% for network in networksGen() %}
+
+                {% set networkCount = networkCount + 1 %}
+
+                {% set ssid = "<hidden>" %}
+
+                {% if len(network[0]) > 0 %}
+                    {% set ssid = network[0] %}
+                {% endif %}
+
+                {% if network[1] <= -80 %}
+                    {% set numBars = "1" %}
+                {% elif network[1] <= -70 %}
+                    {% set numBars = "2" %}
+                {% else %}
+                    {% set numBars = "3" %}
+                {% endif %}
+
+                {% if network[2] > 0 %}
+                    {% set showLock = "_locked" %}
+                {% else %}
+                    {% set showLock = "" %}
+                {% endif %}
+
+                <p>
+                    <a href="/_uwifisetup/try_connect.html?ssid={{ ssid }}" class="ta-left">{{ ssid }}</a>
+                    <img class="f-right" src="/_uwifisetup/assets/network_wifi_{{ numBars }}_bar{{ showLock }}_48px.svg"/>
+                </p>
+
+            {% endfor %}
+
+        <hr class="m-zero">
+
+        <code class="ta-center">{{ networkCount }} Found</code>
+
+        <form method="get">
+            <button type="submit" class="button -block">Re-Scan</button>
+        </form>
+
+    </div>
+
+{% include "/_uwifisetup/_bottom.html" %}

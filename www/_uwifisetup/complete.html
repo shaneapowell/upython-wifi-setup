@@ -1,0 +1,24 @@
+{% args appName, appVersion, ipAddress %}
+{% include "/_uwifisetup/_top.html" %}
+{% include "/_uwifisetup/_start.html" %}
+
+    <div class="wrapper -thin">
+
+        <div class="ta-center"><strong>{{ appName }}</strong></div>
+
+        <strong>Congrats. Connected..</strong>
+        <code>{{ ipAddress }}</code>
+        <p>Your device will now restart.</p>
+        <p>The LED eventually blink 1nce a second when connected to your WiFi.</p>
+        <p>You may now open the mobile app on your phone to access the main configuration</p>
+
+        <form action="/_uwifisetup/setup_complete" action="get">
+            <button type="submit" class="button -block">Complete</button>
+        </form>
+
+        <hr>
+        <small>{{ appVersion }} Shane Powell ©2023</small>
+
+    </div>
+
+{% include "/_uwifisetup/_bottom.html" %}

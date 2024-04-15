@@ -1,0 +1,29 @@
+
+
+<!doctype html>
+<html>
+    <head>
+        <title>{{ appName }}</title>
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="apple-touch-fullscreen" content="yes">
+
+        <link rel="stylesheet" href="/_uwifisetup/assets/cutestrap.min.css">
+        <link rel="icon" href="/_uwifisetup/assets/favicon.ico">
+        <link rel="stylesheet" href="/_uwifisetup/assets/custom.css">
+        <script type="text/javascript" src="/_uwifisetup/assets/custom.js"></script>
+
+
+        <script>
+            window.onload = function() {
+                showLoader(false);
+            }
+
+            /* Default, prevent prevent re-submit on page refresh */
+            if ( window.history.replaceState ) {
+             window.history.replaceState( null, null, window.location.href );
+            }
+        </script>
+
+

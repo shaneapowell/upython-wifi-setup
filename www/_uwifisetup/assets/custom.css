@@ -1,0 +1,60 @@
+
+.loader {
+  z-index: 99;
+  top: 180px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  position: absolute;
+  border: 24px solid #e3e3e3;
+  border-radius: 50%;
+  border-top: 24px solid hsl(224, 64%, 57%);
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+html {
+  --border-radius: 4px;
+  --color-primary-tint1: hsl(224, 64%, 72%);
+  --color-primary: hsl(224, 64%, 57%);
+  --color-primary-shade1: hsl(224, 64%, 47%);
+  --color-accent-tint1: hsl(170, 80%, 60%);
+  --color-accent: hsl(170, 80%, 45%);
+  --color-accent-shade1: hsl(170, 80%, 35%);
+  --color-link: hsl(230, 60%, 50%);
+  --color-link-visited: hsl(290, 60%, 50%);
+  --color-link-hover: hsl(230, 80%, 60%);
+  --color-link-active: hsl(350, 60%, 50%);
+  --color-neutral-tint4: hsl(170, 10%, 98%);
+  --color-neutral-tint3: hsl(170, 10%, 94%);
+  --color-neutral-tint2: hsl(170, 10%, 85%);
+  --color-neutral-tint1: hsl(170, 10%, 68%);
+  --color-neutral: hsl(170, 10%, 55%);
+  --color-neutral-shade1: hsl(170, 10%, 41%);
+  --color-neutral-shade2: hsl(170, 10%, 30%);
+  --color-neutral-shade3: hsl(170, 10%, 18%);
+  --color-neutral-shade4: hsl(170, 10%, 2%);
+  --focus-outline: var(--rhythm-twelfth) dotted var(--color-primary-tint1);
+  --focus-outline-offset: var(--rhythm-twelfth);
+  --font-family: 'Avenir', 'Avenir Next', 'Helvetica Neue', 'Segoe UI', 'Verdana', sans-serif;
+  --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-heading: var(--font-family);
+  --font-body: var(--font-family);
+}
+
+.no-padding {
+  padding: 0
+}
