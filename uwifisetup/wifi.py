@@ -4,10 +4,11 @@ import os
 import json
 import uwifisetup.log as log
 import uwifisetup.util as util
+
+
 CREDS_FILE = "/creds.json"
 _KEY_SSID = "ssid"
-_KEY_PWD  = "pwd"
-
+_KEY_PWD = "pwd"
 
 
 def hasCredentials() -> bool:
@@ -21,7 +22,7 @@ def hasCredentials() -> bool:
 
 def factoryReset():
     """
-    Purge/Delete teh creds file. Which will
+    Purge/Delete the creds file. Which will
     result in a "setup" stage being started.
     """
     log.info(__name__, "Clearing wifi creds")
@@ -54,7 +55,7 @@ def loadCredentials() -> tuple[str, str]:
             pwd = creds[_KEY_PWD] if _KEY_PWD in creds else None
             return (ssid, pwd)
     except Exception as e:
-        log.error(__name__, "Failure loading creds file [{e}].")
+        log.error(__name__, f"Failure loading creds file [{e}].")
         return None
 
 
@@ -92,7 +93,7 @@ async def connectWifi(deviceName) -> bool:
 
     # Wait up to 25 seconds to connect
     waitCount = 0
-    while wifi.isconnected() == False:
+    while not wifi.isconnected():
         await asyncio.sleep(1)
         waitCount += 1
 
@@ -103,5 +104,3 @@ async def connectWifi(deviceName) -> bool:
     log.info(__name__, f"Connected to WiFi [{wifi.ifconfig()[0]}] @ [{creds[0]}]")
 
     return True
-
-

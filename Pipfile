@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flake8 = "==7.0.0"
+mypy = "==1.8.0"
+mpremote = "==1.22.0"
+
+[dev-packages]
+
+# This is just to inform pipenv how to run.
+# You MUST also update the V_MAJOR and V_MINOR in versioncheck.py
+[requires]
+python_version = "3.11"
+
+[scripts]
+linter = "python -m flake8 src"
+typechecker = "python -m mypy src/uwifisetup  --check-untyped-defs"
+tests = "python -m pytest tests"
+test = "python -m pytest -q tests/test_api.py"
+deploy_library = "python -m mpremote cp -r uwifisetup/ :"
+deploy_assets = "python -m mpremote cp -r www/ :"
+example = "python -m mpremote run examples/example.py"
+example_reset = "python -m mpremote run examples/example_reset.py"
+reset = "python -m mpremote reset"

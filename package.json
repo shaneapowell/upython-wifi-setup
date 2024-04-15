@@ -1,10 +1,29 @@
 {
     "urls": [
-        ["uwifisetup/__init__.py", "github:shaneapowell/upython-wifi-setup/uwifisetup/__init__.py"],
-        ["uwifisetup/setup.py",    "github:shaneapowell/upython-wifi-setup/uwifisetup/setup.py"],
-        ["uwifisetup/wifi.py",     "github:shaneapowell/upython-wifi-setup/uwifisetup/wifi.py"]
+        ["lib/uwifisetup/__init__.py", "github:shaneapowell/upython-wifi-setup/uwifisetup/__init__.py"],
+        ["lib/uwifisetup/setup.py",    "github:shaneapowell/upython-wifi-setup/uwifisetup/setup.py"],
+        ["lib/uwifisetup/wifi.py",     "github:shaneapowell/upython-wifi-setup/uwifisetup/wifi.py"],
+
+        ["www/_uwifisetup/_bottom.html",       "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/_button.html"],
+        ["www/_uwifisetup/_start.html",        "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/_start.html"],
+        ["www/_uwifisetup/_top.html",          "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/_top.html"],
+        ["www/_uwifisetup/complete.html",      "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/complete.html"],
+        ["www/_uwifisetup/list_networks.html", "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/list_networks.html"],
+        ["www/_uwifisetup/try_connect.html",   "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/try_connect"],
+        ["www/_uwifisetup/welcome.html",       "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/welcome.html"],
+
+        ["www/_uwifisetup/assets/custom.css",           "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/custom.css"],
+        ["www/_uwifisetup/assets/custom.js",            "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/custom.js"],
+        ["www/_uwifisetup/assets/cutestrap.min.css.gz", "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/cutestrap.min.css.gz"],
+
+        ["www/_uwifisetup/assets/network_wifi_1_bar_48px.svg",         "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/network_wifi_1_bar_48px.svg"],
+        ["www/_uwifisetup/assets/network_wifi_1_bar_locked_48px.svg",  "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/network_wifi_1_bar_locked_48px.svg"],
+        ["www/_uwifisetup/assets/network_wifi_2_bar_48px.svg",         "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/network_wifi_2_bar_48px.svg"],
+        ["www/_uwifisetup/assets/network_wifi_2_bar_locked_48px.svg",  "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/network_wifi_2_bar_locked_48px.svg"],
+        ["www/_uwifisetup/assets/network_wifi_3_bar_48px.svg",         "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/network_wifi_3_bar_48px.svg"],
+        ["www/_uwifisetup/assets/network_wifi_3_bar_locked_48px.svg",  "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/network_wifi_3_bar_locked_48px.svg"]
     ],
     "deps": [
     ],
-    "version": "0.1"
+    "version": "0.2"
 }

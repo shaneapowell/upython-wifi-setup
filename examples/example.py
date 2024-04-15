@@ -1,6 +1,7 @@
 import uasyncio as asyncio
 from uwifisetup import wifi
 
+
 async def main():
 
     deviceName = "MyUPy"
@@ -12,10 +13,14 @@ async def main():
         else:
             print("WiFi Connect failure. Reset to try again.")
             # The esp32 wifi can get "stuck" for some reason I'm not quite sure of. resetting the device fixes this most times.
-            # import machine
-            #machine.reset()
+            import machine
+            machine.reset()
     else:
         from uwifisetup import setup
-        await setup.setupWifi("MyUPy", resetDeviceWhenSetupComplete=True)
+        await setup.setupWifi(deviceName="MyPyDevice",
+                              appName="My App",
+                              completeMessage="Your device will now restart. You may access your device with your webbrowser on your phone or laptop",
+                              resetDeviceWhenSetupComplete=True)
 
-asyncio.get_event_loop().run_until_complete( main() )
+
+asyncio.get_event_loop().run_until_complete(main())

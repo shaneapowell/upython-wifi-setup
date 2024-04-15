@@ -1,11 +1,11 @@
 from microdot_asyncio import Microdot, send_file, redirect, Response
 from microdot_utemplate import render_template, init_templates
-from utemplate import source, recompile
 import uasyncio as asyncio
 import network
 import machine
 import socket
-import os, time, sys, gc
+import time
+import gc
 import uwifisetup.wifi as wifi
 import uwifisetup.log as log
 import uwifisetup.util as util
@@ -19,7 +19,7 @@ MIME = {
     ".css": "text/css",
     ".ico": "image/vnd.microsoft.icon",
     ".jpg": "image/jpeg",
-    ".png":  "image/png",
+    ".png": "image/png",
     ".svg": "image/svg+xml"
 }
 
@@ -28,22 +28,27 @@ _portal = None
 _dnsServerRunning = True
 
 
-APP_NAME="AppName Here"
-APP_VERSION="1.2.3a"
-
-async def setupWifi(deviceName, templateFileRoot = DEFAULT_FILE_ROOT, resetDeviceWhenSetupComplete = False):
+async def setupWifi(deviceName: str,
+                    appName: str,
+                    completeMessage: str,
+                    templateFileRoot: str = DEFAULT_FILE_ROOT,
+                    resetDeviceWhenSetupComplete: bool = False):
     """
     Run the setup portal websever and capture dns server.
-    This is done in an async, so you must await this. The
-    response is True if the setup was a success. False if it
-    was a failure for some reason. Though, at this point in the
-    design of this class, I don't know what that could be.
-    The portal will remain active until a wifi is correctly configured.
+    This is done in an async, so you must await this.
+
+    deviceName: is the title put at the top of the welcome page on the portal
+    tempalteFileRoot: is the location of the _uwifisetup html and assets files. The default is in the directory `www` on the device.
+    resetDeviceWhenSetupComplete: Due to memory limitation, it is wise to reset this device after the setup is complete to free up resources.
     """
     global _dnsServerRunning
 
     assert deviceName is not None, "deviceName is required"
     assert isinstance(deviceName, str), "deviceName must be a string"
+    assert appName is not None, "appName is required"
+    assert isinstance(appName, str), "appName must be a string"
+    assert completeMessage is not None, "completeMessage is required"
+    assert isinstance(completeMessage, str), "completeMessage must be a string"
     assert templateFileRoot is not None, "template file root is requried"
     assert isinstance(templateFileRoot, str), "template root must be a string"
     assert resetDeviceWhenSetupComplete is not None, "resetDeviceWhenSetupComplete is requried"
@@ -60,8 +65,8 @@ async def setupWifi(deviceName, templateFileRoot = DEFAULT_FILE_ROOT, resetDevic
 
 
     # Run the portal, and wait for it
-    dnsTask = asyncio.create_task(_startDnsServer())
-    await _startPortalWebServer(templateFileRoot=templateFileRoot)
+    asyncio.create_task(_startDnsServer())
+    await _startPortalWebServer(templateFileRoot=templateFileRoot, deviceName=deviceName, appName=appName, completeMessage=completeMessage)
 
     # Shutdown the DNS service. The dns will get a AP DOWN exception when we shut down the ap below
     _dnsServerRunning = False
@@ -101,7 +106,7 @@ async def _startDnsServer():
     """
     global _dnsServerRunning
 
-    log.info(__name__, f"Start Captive DNS Server...")
+    log.info(__name__, "Start Captive DNS Server...")
 
     # Setup our DNS listening socket
     dnsSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -112,14 +117,13 @@ async def _startDnsServer():
     while _dnsServerRunning:
         try:
             gc.collect()
-            #data, rAddr = dnsSocket.recvfrom(4096)
             data, rAddr = dnsSocket.recvfrom(512)
-            log.info(__name__, f"Received DNS message ...")
+            log.info(__name__, "Received DNS message ...")
             query = _DNSQueryWrapper(data)
             dnsSocket.sendto(query.response(PORTAL_IP), rAddr)
             await asyncio.sleep_ms(100)
 
-        except Exception as e:
+        except Exception:
             # Timeout, just keep retrying forever
             await asyncio.sleep(3)
 
@@ -127,7 +131,7 @@ async def _startDnsServer():
     dnsSocket.close()
 
 
-async def _startPortalWebServer(templateFileRoot):
+async def _startPortalWebServer(templateFileRoot:str, deviceName:str, appName:str, completeMessage:str):
     """
     Start up the async microdot server to serve up our captive portal pages.
     Pass in an already setup and configured AccessPoint Interface Instance
@@ -144,7 +148,7 @@ async def _startPortalWebServer(templateFileRoot):
     init_templates(template_dir=templateFileRoot)
 
     # Return an "as needed" generator to our template.
-    # The scan won't run until teh page is loading, and will
+    # The scan won't run until the page is loading, and will
     # iterate the result back with the yields
     # (ssid, bssid, channel, RSSI, authMode, hidden )
     # We'll return only the (SSID, RSSI, AuthType)
@@ -152,8 +156,8 @@ async def _startPortalWebServer(templateFileRoot):
         global _wifi
         _wifi.active(True)
         log.info(__name__, "Scanning for available wifi networks...")
-        scanResult = [ (n[0].decode(), n[3], n[4]) for n in _wifi.scan() if n[5] is False and len(n[0]) > 0]
-        scanResult.sort(key=lambda r: r[1], reverse=True) # Sort by RSSI
+        scanResult = [(n[0].decode(), n[3], n[4]) for n in _wifi.scan() if n[5] is False and len(n[0]) > 0]
+        scanResult.sort(key=lambda r: r[1], reverse=True)  # Sort by RSSI
         log.info(__name__, f"Wifi Scan Result: [{scanResult}]")
         uniqueNames = set()
         for n in scanResult:
@@ -162,7 +166,7 @@ async def _startPortalWebServer(templateFileRoot):
                 yield n
 
 
-    @_portal.route('/_uwifisetup/welcome.html', methods=['GET','POST'])
+    @_portal.route('/_uwifisetup/welcome.html', methods=['GET', 'POST'])
     async def getWelcome(request):
         """
         Stage 1.
@@ -171,12 +175,11 @@ async def _startPortalWebServer(templateFileRoot):
         """
         return render_template(
             template=request.path,
-            appName=APP_NAME,
-            appVersion=APP_VERSION
+            appName=appName
         )
 
 
-    @_portal.route('/_uwifisetup/list_networks.html', methods=['GET','POST'])
+    @_portal.route('/_uwifisetup/list_networks.html', methods=['GET', 'POST'])
     async def getListNetworks(request):
         """
         Stage 2.
@@ -185,8 +188,7 @@ async def _startPortalWebServer(templateFileRoot):
         log.info(__name__, "Network List Result\n")
         return render_template(
             template=request.path,
-            appName=APP_NAME,
-            appVersion=APP_VERSION,
+            appName=appName,
             networksGen=_networksGen
         )
 
@@ -208,6 +210,7 @@ async def _startPortalWebServer(templateFileRoot):
             ssid = request.form.get("ssid")
             password = request.form.get("password")
             attemptConnect = True
+
 
         def connectFunction():
             """
@@ -236,11 +239,11 @@ async def _startPortalWebServer(templateFileRoot):
                         time.sleep(0.5)
                         result = _wifi.status()
                         if result != network.STAT_CONNECTING:
-                            break;
+                            break
                         sleepTime += 1
                         if sleepTime >= 20:
                             sleepTime = -1
-                            break;
+                            break
 
                     if sleepTime == -1:
                         message = "Timed Out"
@@ -263,16 +266,16 @@ async def _startPortalWebServer(templateFileRoot):
             return (success, message)
 
         cf = connectFunction if attemptConnect else None
+
         return render_template(
             template=request.path,
-            appName=APP_NAME,
-            appVersion=APP_VERSION,
+            appName=appName,
             ssid=ssid,
             connectFunc=cf
         )
 
 
-    @_portal.route('/_uwifisetup/complete.html', methods=['GET','POST'])
+    @_portal.route('/_uwifisetup/complete.html', methods=['GET', 'POST'])
     async def getComplete(request):
         """
         Stage 4.
@@ -282,9 +285,9 @@ async def _startPortalWebServer(templateFileRoot):
         global _wifi
         return render_template(
             template=request.path,
-            appName=APP_NAME,
-            appVersion=APP_VERSION,
-            ipAddress=_wifi.ifconfig()[0]
+            appName=appName,
+            ipAddress=_wifi.ifconfig()[0],
+            completeMessage=completeMessage
         )
 
 
@@ -312,7 +315,7 @@ async def _startPortalWebServer(templateFileRoot):
         file = f"{templateFileRoot}{request.path}"
 
         contType = MIME['default']
-        for k,v in MIME.items():
+        for k, v in MIME.items():
             if file.endswith(k):
                 contType = v
                 break
