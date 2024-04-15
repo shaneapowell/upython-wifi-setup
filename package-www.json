@@ -5,7 +5,7 @@
         ["/www/_uwifisetup/_top.html",          "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/_top.html"],
         ["/www/_uwifisetup/complete.html",      "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/complete.html"],
         ["/www/_uwifisetup/list_networks.html", "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/list_networks.html"],
-        ["/www/_uwifisetup/try_connect.html",   "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/try_connect"],
+        ["/www/_uwifisetup/try_connect.html",   "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/try_connect.html"],
         ["/www/_uwifisetup/welcome.html",       "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/welcome.html"],
 
         ["/www/_uwifisetup/assets/custom.css",           "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/assets/custom.css"],

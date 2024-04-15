@@ -61,7 +61,8 @@ The following 2 libraries are required dependencies.  Recommended you drop these
 
 # mip Install
 ```
-mpremote mip install github:shaneapowell/upythn-wifi-setup
+mpremote mip install github:shaneapowell/upython-wifi-setup/package-lib.json
+mpremote mip install github:shaneapowell/upython-wifi-setup/package-www.json --target /
 ```
 
 # How to use this library
