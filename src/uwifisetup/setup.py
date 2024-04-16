@@ -183,7 +183,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
         The main welcome screen.
         Instructions, and the "setup wifi" button
         """
-        return Template(request.path).render(
+        return Template(request.path).generate_async(
             appName=appName,
             welcomeMessage=welcomeMessage
         )
@@ -196,7 +196,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
         List the visible WiFi access points.
         """
         log.info(__name__, "Network List Result\n")
-        return Template(request.path).render(
+        return Template(request.path).generate_async(
             appName=appName,
             networksGen=_networksGen
         )
@@ -276,7 +276,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
 
         cf = connectFunction if attemptConnect else None
 
-        return Template(request.path).render(
+        return Template(request.path).generate_async(
             appName=appName,
             ssid=ssid,
             connectFunc=cf
@@ -291,7 +291,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
         Continue to reboot.
         """
         global _wifi
-        return Template(request.path).render(
+        return Template(request.path).generate_async(
             appName=appName,
             ipAddress=_wifi.ifconfig()[0],
             completeMessage=completeMessage
