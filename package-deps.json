@@ -4,9 +4,9 @@
         ["microdot/microdot.py", "https://raw.githubusercontent.com/miguelgrinberg/microdot/v2.0.5/src/microdot/microdot.py"],
         ["microdot/utemplate.py", "https://raw.githubusercontent.com/miguelgrinberg/microdot/v2.0.5/src/microdot/utemplate.py"],
 
-        ["utemplate/compiled.py", "https://github.com/pfalcon/utemplate/utemplate/compiled.py"],
-        ["utemplate/recompiled.py", "https://github.com/pfalcon/utemplate/utemplate/recompiled.py"],
-        ["utemplate/source.py", "https://github.com/pfalcon/utemplate/utemplate/source.py"]
+        ["utemplate/compiled.py", "https://raw.githubusercontent.com/pfalcon/utemplate/master/utemplate/compiled.py"],
+        ["utemplate/recompiled.py", "https://raw.githubusercontent.com/pfalcon/utemplate/master/utemplate/recompiled.py"],
+        ["utemplate/source.py", "https://raw.githubusercontent.com/pfalcon/utemplate/master/utemplate/source.py"]
 
     ],
     "deps": [
