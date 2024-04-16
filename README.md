@@ -6,7 +6,7 @@
 A simple to install setup and use WiFi Setup Portal for micropython based ESP32 boards.
 
 
-![aplist](docs/sc_aplist.png) ![aplist](docs/sc_password.png) ![aplist](docs/sc_success.png)
+![aplist](docs/sc_aplist.png) ![aplist](docs/sc_password.png)
 
 [All Screenshots](docs/SCREENSHOTS.md)
 
@@ -55,18 +55,21 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
 
 
 # Easy Install
-- install `pipenv`
+- install `pipenv`.
   ```
-  pip install pipenv
+  pip3 install pipenv
   ```
 - Clone this repo
-- Plug in your micropython esp32 device usb to your computer
+  ```
+  git clone https://github.com/shaneapowell/upython-wifi-setup.git
+  ```
+- Plug in your micropython esp32 device usb to your computer.  The `Pipfile` has `/dev/ttyACM0` hard-coded as your upy device.
 - Sync the pipenv venv packages. This is only needed once, or with any new updates to the `Pipfile`.
   ```
   pipenv sync
   ```
-- Deploy the code and assets into the `/lib` folder.
-  - If your board doesn't yet have a `/lib` folder
+- Deploy the code and assets into the `/lib` directory.
+  - If your board doesn't yet have a `/lib` directory. This does no harm to an existing `/lib` directory.
     ```
     pipenv run make_lib_dir
     ```
@@ -77,9 +80,8 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
 - Install the package dependencies
   - [microdot](https://github.com/miguelgrinberg/microdot)
   - [utemplate](https://github.com/pfalcon/utemplate/)
-  You can get the minimal requried parts of the dependencies with my provided `package-deps.json` files. Or , manually install these libs yourself.
-  ```
-  mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
+    ```
+  pipenv run fetch_and_deploy_dependencies
   ```
 - Run the example
   ```
@@ -93,15 +95,11 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
   ```
 
 # Manual Install
-- copy `uwifisetup` to your micropython controller
-    ```
-    mpremote cp -r uwifisetup/ :
-    ```
-- copy `www` to your micropython controller
-    ```
-    mpremote cp -r www_uwifisetup/ :
-    ```
-- `import uwifisetup`
+Because you're the type of person who needs to do things manually.  You can inspect the `Pipfile` for commands to reference.
+- Manually Install the `microdot` and `utemplate` dependencies.
+- Manually copy over the `src/uwifisetup` files.
+- Manually copy over the `src/www` files
+
 
 # .mpy files
 ## pre-compile the library

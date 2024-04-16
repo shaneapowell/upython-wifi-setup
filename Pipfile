@@ -26,6 +26,7 @@ test = "pytest -q tests/test_api.py"
 make_lib_dir = "rshell -p /dev/ttyACM0 mkdir /pyboard/lib"
 deploy_library = "rshell -p /dev/ttyACM0 cp -r src/uwifisetup /pyboard/lib"
 deploy_assets = "rshell -p /dev/ttyACM0 cp -r src/www /pyboard/lib/uwifisetup"
+fetch_and_deploy_dependencies = "mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json"
 
 example = "mpremote run examples/example.py"
 example_reset = "mpremote run examples/example_reset.py"
