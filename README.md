@@ -1,18 +1,26 @@
+# Work In Progress
+**This library is still under active development.**
+
+
 # uPython Wifi Setup
 A simple to install setup and use WiFi Setup Portal for micropython based ESP32 boards.
-Tested on ESP32-S3, ESP32-C3
 
+
+![aplist](docs/sc_aplist.png) ![aplist](docs/sc_password.png) ![aplist](docs/sc_success.png)
+
+[All Screenshots](docs/SCREENSHOTS.md)
+
+
+# Features
 Inspired by https://github.com/george-hawkins/micropython-wifi-setup
-
-# Goals
-- Reliable
+- Reliable and Simple
 - Low Memory Overhead
 - ASYNC processing
 - Very simple web-browser requirements.  Minimal Javascript.
-- No separate web-app build step.  Just simple html template files.
-- Easy to integrate into your existing projects
-- Easy to build your project upon
-- Easy to modify
+- No separate web-app build step.  Just simple html template files. Not Fancy, Just Functional.
+- Easy to integrate into your existing projects.
+- Easy to build your project upon if desired.
+- Easy to modify to make it your own.
 
 # Dependencies
 The following 2 libraries are required dependencies.  Recommended you drop these into your `/lib` directory on your device

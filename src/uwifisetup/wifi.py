@@ -42,7 +42,7 @@ def saveCredentials(ssid: str, pwd: str):
         json.dump(creds, f)
 
 
-def loadCredentials() -> tuple[str, str]:
+def loadCredentials() -> tuple[str, str] | None:
     """
     Read the creds from the file.
     """

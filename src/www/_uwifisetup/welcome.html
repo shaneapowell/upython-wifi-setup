@@ -1,4 +1,4 @@
-{% args appName %}
+{% args appName, welcomeMessage %}
 {% include "/_uwifisetup/_top.html" %}
 {% include "/_uwifisetup/_start.html" %}
 
@@ -6,7 +6,9 @@
 
         <div class="ta-center"><strong>{{ appName }}</strong></div>
 
-        <strong>Welcome.<br></brt> Time to setup your device WiFi</strong>
+        <strong>Welcome</strong>
+
+        <p>{{ welcomeMessage }}</p>
 
         <form action="/_uwifisetup/list_networks.html">
             <button type="submit" class="button -block">Setup Wifi</button>

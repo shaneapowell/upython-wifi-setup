@@ -9,7 +9,6 @@ import gc
 import uwifisetup.wifi as wifi
 import uwifisetup.log as log
 import uwifisetup.util as util
-import os
 
 # Auto-Determine the path to the default www folder within th is lib. When installed with mip. Don't forget to leave off the leading '/'
 DEFAULT_FILE_ROOT = __file__.replace("setup.py", "")[1:] + "www"
@@ -32,6 +31,7 @@ _dnsServerRunning = True
 
 async def setupWifi(deviceName: str,
                     appName: str,
+                    welcomeMessage: str,
                     completeMessage: str,
                     templateFileRoot: str = DEFAULT_FILE_ROOT,
                     resetDeviceWhenSetupComplete: bool = False):
@@ -69,7 +69,11 @@ async def setupWifi(deviceName: str,
 
     # Run the portal, and wait for it
     asyncio.create_task(_startDnsServer())
-    await _startPortalWebServer(templateFileRoot=templateFileRoot, deviceName=deviceName, appName=appName, completeMessage=completeMessage)
+    await _startPortalWebServer(templateFileRoot=templateFileRoot,
+                                deviceName=deviceName,
+                                appName=appName,
+                                welcomeMessage=welcomeMessage,
+                                completeMessage=completeMessage)
 
     # Shutdown the DNS service. The dns will get a AP DOWN exception when we shut down the ap below
     _dnsServerRunning = False
@@ -134,7 +138,7 @@ async def _startDnsServer():
     dnsSocket.close()
 
 
-async def _startPortalWebServer(templateFileRoot:str, deviceName:str, appName:str, completeMessage:str):
+async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName: str, welcomeMessage: str, completeMessage: str):
     """
     Start up the async microdot server to serve up our captive portal pages.
     Pass in an already setup and configured AccessPoint Interface Instance
@@ -178,7 +182,8 @@ async def _startPortalWebServer(templateFileRoot:str, deviceName:str, appName:st
         """
         return render_template(
             template=request.path,
-            appName=appName
+            appName=appName,
+            welcomeMessage=welcomeMessage
         )
 
 

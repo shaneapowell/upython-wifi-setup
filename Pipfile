@@ -8,6 +8,7 @@ flake8 = "==7.0.0"
 mypy = "==1.8.0"
 mpremote = "==1.22.0"
 rshell = "==0.0.32"
+tox = "==4.14.2"
 
 [dev-packages]
 
@@ -16,18 +17,17 @@ rshell = "==0.0.32"
 [requires]
 python_version = "3.11"
 
+
 [scripts]
-linter = "python -m flake8 uwifisetup"
-typechecker = "python -m mypy uwifisetup  --check-untyped-defs"
+linter = "flake8 src/uwifisetup"
+typechecker = "mypy src/uwifisetup stub  --check-untyped-defs"
 
-tests = "python -m pytest tests"
-test = "python -m pytest -q tests/test_api.py"
+tests = "pytest tests"
+test = "pytest -q tests/test_api.py"
 
-deploy_library = "rshell -p /dev/ttyACM0 cp -r uwifisetup /pyboard/lib"
-deploy_assets = "rshell -p /dev/ttyACM0 cp -r www /pyboard/lib/uwifisetup"
-#deploy_library = "python -m mpremote cp -r uwifisetup/ :"
-#deploy_assets = "python -m mpremote cp -r www/ :"
+deploy_library = "rshell -p /dev/ttyACM0 cp -r src/uwifisetup /pyboard/lib"
+deploy_assets = "rshell -p /dev/ttyACM0 cp -r src/www /pyboard/lib/uwifisetup"
 
-example = "python -m mpremote run examples/example.py"
-example_reset = "python -m mpremote run examples/example_reset.py"
-reset = "python -m mpremote reset"
+example = "mpremote run examples/example.py"
+example_reset = "mpremote run examples/example_reset.py"
+reset = "mpremote reset"

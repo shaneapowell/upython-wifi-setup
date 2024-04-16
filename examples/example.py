@@ -19,6 +19,7 @@ async def main():
         from uwifisetup import setup
         await setup.setupWifi(deviceName="MyPyDevice",
                               appName="My App",
+                              welcomeMessage="Time to setup your device WiFi",
                               completeMessage="Your device will now restart. You may access your device with your webbrowser on your phone or laptop",
                               resetDeviceWhenSetupComplete=True)
 
