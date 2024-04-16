@@ -1,6 +1,7 @@
 # uPython Wifi Setup
+A simple to install setup and use WiFi Setup Portal for micropython based ESP32 boards.
+Tested on ESP32-S3, ESP32-C3
 
-# Information
 Inspired by https://github.com/george-hawkins/micropython-wifi-setup
 
 # Goals
@@ -8,9 +9,10 @@ Inspired by https://github.com/george-hawkins/micropython-wifi-setup
 - Low Memory Overhead
 - ASYNC processing
 - Very simple web-browser requirements.  Minimal Javascript.
-- No separate web-app build step.
+- No separate web-app build step.  Just simple html template files.
 - Easy to integrate into your existing projects
 - Easy to build your project upon
+- Easy to modify
 
 # Dependencies
 The following 2 libraries are required dependencies.  Recommended you drop these into your `/lib` directory on your device
@@ -23,14 +25,38 @@ The following 2 libraries are required dependencies.  Recommended you drop these
     - `microdot.py`
     - `utemplate.py`
 
+# The Library Contents
+Made up of 2 main parts. The .py source files, and the assets.
+They are kept separate to simplify customizing this library.
+
+## `uwifisetup` - The source
+This is the library python files.  These files need to be in the `/lib` or the `/` root of your device.  Or, pre-frozen in the `modules` directory of a custom micropython firmware.
+
+## `www` - The Assets
+This is the assets directory.  Contains the `.html` template files, and a handfull of image and css assets.
+These files by default are loaded from `/lib/uwifisetup/www` from your device. That is the default install location using the mip install method below.
+If you wish to move these to a different install location on yoru deivce, you need only specify a different `templateFileRoot` parameter to `setup.setupWifi(...)`
+
+
+# Easiest Install
+This will put all the source and asset files into the device `/lib` directory.  You'll have to manually move the `www` content if you wish to customize things.
+```
+mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
+```
+
+
 # Easy Install
+- install `pipenv`
+  ```
+  pip install pipenv
+  ```
 - Clone this repo
 - Plug in your micropython esp32 device usb to your computer
 - Sync the pipenv venv packages. This is only needed once, or with any new updates to the `Pipfile`.
   ```
-  run `pipenv sync
+  pipenv sync
   ```
-- Deploy the code and assets
+- Deploy the code and assets into the `/lib` folder
   ```
   pipenv run deploy_library
   pipenv run deploy_assets
@@ -47,26 +73,40 @@ The following 2 libraries are required dependencies.  Recommended you drop these
   ```
 
 # Manual Install
-- copy src/uwifisetup to your micropython controller
+- copy `uwifisetup` to your micropython controller
     ```
-    cd src
     mpremote cp -r uwifisetup/ :
     ```
-- copy assets/_uwifisetup to your micropython controller
+- copy `www` to your micropython controller
     ```
-    cd assets
-    mpremote cp -r _uwifisetup/ :
+    mpremote cp -r www_uwifisetup/ :
     ```
 - `import uwifisetup`
 
-# mip Install
-```
-mpremote mip install github:shaneapowell/upython-wifi-setup/package-lib.json
-mpremote mip install github:shaneapowell/upython-wifi-setup/package-www.json --target /
-```
+# .mpy files
+## pre-compile the library
+## pre-compile the assets
 
-# How to use this library
+# Freeze into a custom firmware
+TBD
 
+# Credentials
+The access point name, and wifi password are stored in a plain text json file `creds.json` in the root of the data parition.
+
+# Reference
+Functions and Use Reference
+
+## `uwifisetup.setup.py`
+- setupWifi()
+- shutdown()
+
+## `uwifisetup.wifi.py`
+- hasCredentials()
+- factoryReset()
+- saveCredentials()
+- loadCredentials()
+- connectWifi()
+-
 
 # How to incorporate what this library provides into your project
 - include udot web server

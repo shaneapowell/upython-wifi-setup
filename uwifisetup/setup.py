@@ -9,8 +9,10 @@ import gc
 import uwifisetup.wifi as wifi
 import uwifisetup.log as log
 import uwifisetup.util as util
+import os
 
-DEFAULT_FILE_ROOT = "www"
+# Auto-Determine the path to the default www folder within th is lib. When installed with mip. Don't forget to leave off the leading '/'
+DEFAULT_FILE_ROOT = __file__.replace("setup.py", "")[1:] + "www"
 PORTAL_IP = '172.18.4.1'
 PORTAL_MASK = '255.255.255.0'
 
@@ -55,6 +57,7 @@ async def setupWifi(deviceName: str,
     assert isinstance(resetDeviceWhenSetupComplete, bool), "resetDeviceWhenSetupComplete must be a bool"
 
     log.info(__name__, f"Starting WiFi Setup [{deviceName}]")
+    log.debug(__name__, f"Serving Assets from [{templateFileRoot}]")
 
     network.hostname(deviceName)
     ap = network.WLAN(network.AP_IF)
