@@ -1,5 +1,5 @@
-from microdot.microdot import Microdot, send_file, redirect, Response
-from microdot.utemplate import render_template, init_templates
+from microdot.microdot import Microdot, Response
+from microdot.utemplate import Template
 import uasyncio as asyncio
 import network
 import machine
@@ -152,14 +152,17 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
     Response.default_content_type = 'text/html'
     # init_templates(template_dir=FILE_ROOT, loader_class=recompile.Loader)
     # init_templates(template_dir=FILE_ROOT, loader_class=source.Loader)
-    init_templates(template_dir=templateFileRoot)
+    Template.initialize(template_dir=templateFileRoot)
 
-    # Return an "as needed" generator to our template.
-    # The scan won't run until the page is loading, and will
-    # iterate the result back with the yields
-    # (ssid, bssid, channel, RSSI, authMode, hidden )
-    # We'll return only the (SSID, RSSI, AuthType)
+
     def _networksGen():
+        """
+        Return an "as needed" generator to our template.
+        The scan won't run until the page is loading, and will
+        iterate the result back with the yields
+        (ssid, bssid, channel, RSSI, authMode, hidden )
+        We'll return only the (SSID, RSSI, AuthType)
+        """
         global _wifi
         _wifi.active(True)
         log.info(__name__, "Scanning for available wifi networks...")
@@ -180,8 +183,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
         The main welcome screen.
         Instructions, and the "setup wifi" button
         """
-        return render_template(
-            template=request.path,
+        return Template(request.path).render(
             appName=appName,
             welcomeMessage=welcomeMessage
         )
@@ -194,8 +196,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
         List the visible WiFi access points.
         """
         log.info(__name__, "Network List Result\n")
-        return render_template(
-            template=request.path,
+        return Template(request.path).render(
             appName=appName,
             networksGen=_networksGen
         )
@@ -275,8 +276,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
 
         cf = connectFunction if attemptConnect else None
 
-        return render_template(
-            template=request.path,
+        return Template(request.path).render(
             appName=appName,
             ssid=ssid,
             connectFunc=cf
@@ -291,8 +291,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
         Continue to reboot.
         """
         global _wifi
-        return render_template(
-            template=request.path,
+        return Template(request.path).render(
             appName=appName,
             ipAddress=_wifi.ifconfig()[0],
             completeMessage=completeMessage
@@ -340,7 +339,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
             return "Not Found", 404
 
         log.debug(__name__, f"Returning with file [{file}] [{contType}]")
-        return send_file(file, content_type=contType, compressed=compressed, max_age=3600)
+        return Response.send_file(file, content_type=contType, compressed=compressed, max_age=3600)
 
 
     @_portal.route('/<path>')
@@ -349,7 +348,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
 
         # Default, is to redirect on every unknown request
         log.info(__name__, "Redirecting to welcome Page")
-        return redirect('/_uwifisetup/welcome.html')
+        return Response.redirect('/_uwifisetup/welcome.html')
 
 
     # **************************
