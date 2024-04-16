@@ -64,7 +64,11 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
   ```
   pipenv sync
   ```
-- Deploy the code and assets into the `/lib` folder
+- Deploy the code and assets into the `/lib` folder.
+  - If your board doesn't yet have a `/lib` folder
+    ```
+    pipenv run make_lib_dir
+    ```
   ```
   pipenv run deploy_library
   pipenv run deploy_assets

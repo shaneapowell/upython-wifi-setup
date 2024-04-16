@@ -12,10 +12,8 @@ tox = "==4.14.2"
 
 [dev-packages]
 
-# This is just to inform pipenv how to run.
-# You MUST also update the V_MAJOR and V_MINOR in versioncheck.py
 [requires]
-python_version = "3.11"
+# python_version = "3.11"
 
 
 [scripts]
@@ -25,6 +23,7 @@ typechecker = "mypy src/uwifisetup stub  --check-untyped-defs"
 tests = "pytest tests"
 test = "pytest -q tests/test_api.py"
 
+make_lib_dir = "rshell -p /dev/ttyACM0 mkdir /pyboard/lib"
 deploy_library = "rshell -p /dev/ttyACM0 cp -r src/uwifisetup /pyboard/lib"
 deploy_assets = "rshell -p /dev/ttyACM0 cp -r src/www /pyboard/lib/uwifisetup"
 

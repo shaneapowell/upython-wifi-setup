@@ -1,0 +1,15 @@
+{
+    "urls": [
+        ["microdot/__init__.py", "https://github.com/miguelgrinberg/microdot/src/microdot/__init__.py@v2.0.5"],
+        ["microdot/microdot.py", "https://github.com/miguelgrinberg/microdot/src/microdot/microdot.py@v2.0.5"],
+        ["microdot/utemplate.py", "https://github.com/miguelgrinberg/microdot/src/microdot/utemplate.py@v2.0.5"],
+
+        ["utemplate/compiled.py", "https://github.com/pfalcon/utemplate/utemplate/compiled.py"],
+        ["utemplate/recompiled.py", "https://github.com/pfalcon/utemplate/utemplate/recompiled.py"],
+        ["utemplate/source.py", "https://github.com/pfalcon/utemplate/utemplate/source.py"]
+
+    ],
+    "deps": [
+    ],
+    "version": "0.2"
+}
