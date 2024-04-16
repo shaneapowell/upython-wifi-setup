@@ -3,6 +3,8 @@
         ["uwifisetup/__init__.py", "github:shaneapowell/upython-wifi-setup/uwifisetup/__init__.py"],
         ["uwifisetup/setup.py",    "github:shaneapowell/upython-wifi-setup/uwifisetup/setup.py"],
         ["uwifisetup/wifi.py",     "github:shaneapowell/upython-wifi-setup/uwifisetup/wifi.py"],
+        ["uwifisetup/log.py",      "github:shaneapowell/upython-wifi-setup/uwifisetup/log.py"],
+        ["uwifisetup/util.py",     "github:shaneapowell/upython-wifi-setup/uwifisetup/util.py"],
 
         ["uwifisetup/www/_uwifisetup/_bottom.html",       "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/_bottom.html"],
         ["uwifisetup/www/_uwifisetup/_start.html",        "github:shaneapowell/upython-wifi-setup/www/_uwifisetup/_start.html"],
