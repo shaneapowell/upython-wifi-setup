@@ -1,5 +1,5 @@
-from microdot_asyncio import Microdot, send_file, redirect, Response
-from microdot_utemplate import render_template, init_templates
+from microdot.microdot import Microdot, send_file, redirect, Response
+from microdot.utemplate import render_template, init_templates
 import uasyncio as asyncio
 import network
 import machine

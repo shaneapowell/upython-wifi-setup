@@ -49,6 +49,7 @@ If you wish to move these to a different install location on yoru deivce, you ne
 # Easiest Install
 This will put all the source and asset files into the device `/lib` directory.  You'll have to manually move the `www` content if you wish to customize things.
 ```
+mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
 mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
 ```
 
@@ -72,6 +73,13 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
   ```
   pipenv run deploy_library
   pipenv run deploy_assets
+  ```
+- Install the package dependencies
+  - [microdot](https://github.com/miguelgrinberg/microdot)
+  - [utemplate](https://github.com/pfalcon/utemplate/)
+  You can get the minimal requried parts of the dependencies with my provided `package-deps.json` files. Or , manually install these libs yourself.
+  ```
+  mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
   ```
 - Run the example
   ```

@@ -5,7 +5,7 @@
         ["microdot/utemplate.py", "https://raw.githubusercontent.com/miguelgrinberg/microdot/v2.0.5/src/microdot/utemplate.py"],
 
         ["utemplate/compiled.py", "https://raw.githubusercontent.com/pfalcon/utemplate/master/utemplate/compiled.py"],
-        ["utemplate/recompiled.py", "https://raw.githubusercontent.com/pfalcon/utemplate/master/utemplate/recompiled.py"],
+        ["utemplate/recompile.py", "https://raw.githubusercontent.com/pfalcon/utemplate/master/utemplate/recompile.py"],
         ["utemplate/source.py", "https://raw.githubusercontent.com/pfalcon/utemplate/master/utemplate/source.py"]
 
     ],
