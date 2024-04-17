@@ -64,7 +64,7 @@ async def setupWifi(deviceName: str,
     ap.active(True)
     ap.ifconfig((PORTAL_IP, PORTAL_MASK, PORTAL_IP, PORTAL_IP))
     ap.config(essid=deviceName, authmode=network.AUTH_OPEN)
-    log.info(__name__, f"AP IP Conf {ap.ifconfig()}")
+    log.info(__name__, f"AP IP Config {ap.ifconfig()}")
 
 
     # Run the portal, and wait for it
@@ -83,7 +83,7 @@ async def setupWifi(deviceName: str,
     ap.active(False)
     ap = None
 
-    log.info(__name__, f"Wifi Portal Copmplete... reset device [{resetDeviceWhenSetupComplete}]")
+    log.info(__name__, f"Wifi Portal Complete... reset device [{resetDeviceWhenSetupComplete}]")
     if resetDeviceWhenSetupComplete:
         machine.reset()
 
