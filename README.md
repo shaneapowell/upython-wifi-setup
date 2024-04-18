@@ -46,11 +46,17 @@ These files by default are loaded from `/lib/uwifisetup/www` from your device. T
 If you wish to move these to a different install location on yoru deivce, you need only specify a different `templateFileRoot` parameter to `setup.setupWifi(...)`
 
 
-# Easiest Install
+# Install (EASIEST)
+You'll need [mpremote](https://docs.micropython.org/en/latest/reference/packages.html#installing-packages-with-mpremote) installed on your system.
+There are a number of ways to do the install, all platform dependant.
+Linux/Mac
+```sh
+pip install mpremote
+```
 
-## MIP
-Install `upython-wifi-setup` with [mpremote](https://docs.micropython.org/en/latest/reference/packages.html#installing-packages-with-mpremote) into `/lib/uwifisetup` on the device.
-This installs the `.mpy` versions of this library, but still uses the `*/*.py` of the dependencies.  For now...
+## MIP (.mpy)
+Install `upython-wifi-setup` into `/lib/uwifisetup` on the device.
+This installs the `.mpy` pre-compiled versions of this library, but still uses the `*.py` of the dependencies.  For now...
 ```sh
 mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
 mpremote mip install github:shaneapowell/upython-wifi-setup/package.json
@@ -63,15 +69,21 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
 mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
 ```
 
+## Try It Out!
+Copy the `example.py` file to your local system, and run it with `mpremote`
+```sh
+wget https://raw.githubusercontent.com/shaneapowell/upython-wifi-setup/main/examples/example.py
+mpremote run example.py
+```
 
-# Easy Install
+# Install (Easy)
 - Clone this repo
   ```sh
   git clone https://github.com/shaneapowell/upython-wifi-setup.git
   git submodule init
   git submodule update
   ```
-- install `pipenv`.
+- install [pipenv](https://pypi.org/project/pipenv/).
   ```sh
   pip3 install pipenv
   ```
@@ -94,7 +106,7 @@ mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
   pipenv run deploy /dev/ttyACM0
   ```
 
-- Run the example
+- Try it Out. Run the example
   ```
   pipenv run example
   ```
@@ -102,7 +114,7 @@ mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
 - After the setup is complete, the device should reset itself.
 - Re-Run the above example, and the command should finish with a message
   ```
-  Connected tdo wifi Success
+  Connected to wifi Success
   ```
 - Re-Run the example now, to see the wifi connect using your new creds
   ```sh
@@ -113,12 +125,16 @@ mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
   pipenv run example_reset
   ```
 
-# Manual Install
+# Install (Manual)
 Because you're the type of person who needs to do things manually.  You can inspect the `Pipfile` for commands to reference.
 - Manually Install the `microdot` and `utemplate` dependencies.
-- Manually copy over the `dist/uwifisetup` files to `/lib/uwifisetup`.
-- Manually copy over the `dist/www` files to `/lib/uwifisetup/www`
+- Manually copy over the `dist/uwifisetup` (pre-compiled) or `src/uwifisetup` (source) files to `/lib/uwifisetup`.
+- Manually copy over the `dist/www` (pre-compiled) or `src/www` (source) files to `/lib/uwifisetup/www`
+- if you copied the pre-compiled `dist/www` files, you'll also need to copy over the `src/www/_uwifisetup/assets` files into `/lib/uwifisetup/www/_uwifisetup/assets`
 
+
+# Pre-Build for Maximum Performance
+TBD
 
 # Freeze into a custom firmware
 TBD
