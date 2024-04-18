@@ -11,6 +11,7 @@
   * [factoryReset](#uwifisetup.wifi.factoryReset)
   * [saveCredentials](#uwifisetup.wifi.saveCredentials)
   * [loadCredentials](#uwifisetup.wifi.loadCredentials)
+  * [getWifi](#uwifisetup.wifi.getWifi)
   * [connectWifi](#uwifisetup.wifi.connectWifi)
 
 <a id="uwifisetup"></a>
@@ -41,8 +42,19 @@ async def setupWifi(deviceName: str,
 Run the setup portal websever and capture dns server.
 This is done in an async, so you must await this.
 
-deviceName: is the title put at the top of the welcome page on the portal
-tempalteFileRoot: is the location of the _uwifisetup html and assets files. The default is in the directory `www` on the device.
+**deviceName**: What  you'll see broadcast as the available Access Point Name
+
+`appName`: is the title put at the top of the welcome page on the portal.
+
+`welcomeMessage`: the text to put onto the welcome page.
+
+`completeMessage`: the text to put on the final complete page.
+
+`templateFileRoot`: is the location of the _uwifisetup html and assets files. The default is in the directory `www` within this deployment package.
+    If you decide to move where the assets are contained, or which to modify them and use different assets, you can specify the final location with this
+    parameter. This is especially necessary if you decide to `freeze` all your code and dependencies in a custom build firmware. Asset files must remain
+    on the main data filesystem.
+
 resetDeviceWhenSetupComplete: Due to memory limitation, it is wise to reset this device after the setup is complete to free up resources.
 
 <a id="uwifisetup.setup.shutdown"></a>
@@ -56,7 +68,7 @@ def shutdown()
 If the portal was started, shut it down.
 Stop the dns server, and shutdown the web portal server.
 This is automatically called at the end of the wifi setup
-stages. not needed to be called manually.
+stages. Not needed to be called manually.
 
 <a id="uwifisetup.util"></a>
 
@@ -87,7 +99,7 @@ def factoryReset()
 ```
 
 Purge/Delete the creds file. Which will
-result in a "setup" stage being started.
+result in a "setup" stage being started next time.
 
 <a id="uwifisetup.wifi.saveCredentials"></a>
 
@@ -111,6 +123,19 @@ def loadCredentials() -> tuple[str, str] | None
 
 Read the creds from the file.
 
+<a id="uwifisetup.wifi.getWifi"></a>
+
+#### getWifi
+
+```python
+def getWifi()
+```
+
+Return the singleton wifi instance.
+Just a simple clean wrapper around
+`network.WLAN(network.STA_IF)`.
+Here just for added convenience.
+
 <a id="uwifisetup.wifi.connectWifi"></a>
 
 #### connectWifi
@@ -119,10 +144,10 @@ Read the creds from the file.
 async def connectWifi(deviceName) -> bool
 ```
 
-Attemmpt to Connect to the configure wifi, assuming a config has been
-setup. This will always return success if a wifi has been configure, becuase
-the attempts to connect will continue indefinitly.
+Attempt to Connect to the configure wifi, assuming a config has been
+setup. This will always return success if a wifi has been configure, because
+the attempts to connect will continue indefinitely.
 However, if no credentials are yet setup, this will return a False.
 The connection status of the wifi is obtainable from the _wifi
-instance via self.getWifi() function.
+instance via self.getWifi() function.  Which is the same as calling `network.WLAN(network.STA_IF)`
 

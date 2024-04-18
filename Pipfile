@@ -38,9 +38,6 @@ example = "mpremote run examples/example.py"
 example_reset = "mpremote run examples/example_reset.py"
 reset = "mpremote reset"
 
-# Setup
-dev_setup = "bash -c tools/dev_setup.sh"
-
 # build
 #pull_compiled_assets = "bash -c \"rshell -p /dev/ttyACM0 rm /pyboard/lib/uwifisetup/www/_uwifisetup/*.html\;\" rshell -p /dev/ttyACM0 cp -r /pyboard/lib/uwifisetup/www dist/www\""
 build = "bash -c tools/build.sh"

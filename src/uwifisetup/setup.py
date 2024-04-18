@@ -1,20 +1,21 @@
-from microdot.microdot import Microdot, Response
-from microdot.utemplate import Template
+from microdot.microdot import Microdot, Response  # type: ignore [import-untyped]
+from microdot.utemplate import Template   # type: ignore [import-untyped]
 import uasyncio as asyncio
 import network
-import machine
+import machine   # type: ignore [import-not-found]
 import socket
 import time
 import gc
-import utemplate
+# from utemplate import source  # type: ignore [import-untyped]
+from utemplate import compiled  # type: ignore [import-untyped]
 import uwifisetup.wifi as wifi
 import uwifisetup.log as log
 import uwifisetup.util as util
 
 # By default, we use the pre-compiled Loader.
 # If doinG active development, switch to the None loader. Which uses the source Loader.
-# DEFAULT_TEMPLATE_LOADER_CLASS=utemplate.compiled.Loader
-DEFAULT_TEMPLATE_LOADER_CLASS=utemplate.recompile.Loader
+DEFAULT_TEMPLATE_LOADER_CLASS = compiled.Loader
+# DEFAULT_TEMPLATE_LOADER_CLASS = recompile.Loader
 
 # Auto-Determine the path to the default www folder within th is lib. When installed with mip. Don't forget to leave off the leading '/'
 DEFAULT_FILE_ROOT = '/'.join(__file__.split('/')[:-1])[1:] + "/www"
@@ -46,8 +47,19 @@ async def setupWifi(deviceName: str,
     Run the setup portal websever and capture dns server.
     This is done in an async, so you must await this.
 
-    deviceName: is the title put at the top of the welcome page on the portal
-    tempalteFileRoot: is the location of the _uwifisetup html and assets files. The default is in the directory `www` on the device.
+    deviceName`: What  you'll see broadcast as the available Access Point Name
+
+    `appName`: is the title put at the top of the welcome page on the portal.
+
+    `welcomeMessage`: the text to put onto the welcome page.
+
+    `completeMessage`: the text to put on the final complete page.
+
+    `templateFileRoot`: is the location of the _uwifisetup html and assets files. The default is in the directory `www` within this deployment package.
+        If you decide to move where the assets are contained, or which to modify them and use different assets, you can specify the final location with this
+        parameter. This is especially necessary if you decide to `freeze` all your code and dependencies in a custom build firmware. Asset files must remain
+        on the main data filesystem.
+
     resetDeviceWhenSetupComplete: Due to memory limitation, it is wise to reset this device after the setup is complete to free up resources.
     """
     global _dnsServerRunning
@@ -60,7 +72,7 @@ async def setupWifi(deviceName: str,
     assert isinstance(completeMessage, str), "completeMessage must be a string"
     assert templateFileRoot is not None, "template file root is requried"
     assert isinstance(templateFileRoot, str), "template root must be a string"
-    assert resetDeviceWhenSetupComplete is not None, "resetDeviceWhenSetupComplete is requried"
+    assert resetDeviceWhenSetupComplete is not None, "resetDeviceWhenSetupComplete is required"
     assert isinstance(resetDeviceWhenSetupComplete, bool), "resetDeviceWhenSetupComplete must be a bool"
 
     log.info(__name__, f"Starting WiFi Setup [{deviceName}]")
@@ -103,7 +115,7 @@ def shutdown():
     If the portal was started, shut it down.
     Stop the dns server, and shutdown the web portal server.
     This is automatically called at the end of the wifi setup
-    stages. not needed to be called manually.
+    stages. Not needed to be called manually.
     """
     log.info(__name__, "Shutting Down Captive Portal")
     global _portal

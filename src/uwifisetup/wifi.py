@@ -23,7 +23,7 @@ def hasCredentials() -> bool:
 def factoryReset():
     """
     Purge/Delete the creds file. Which will
-    result in a "setup" stage being started.
+    result in a "setup" stage being started next time.
     """
     log.info(__name__, "Clearing wifi creds")
     if hasCredentials():
@@ -59,14 +59,24 @@ def loadCredentials() -> tuple[str, str] | None:
         return None
 
 
+def getWifi():
+    """
+    Return the singleton wifi instance.
+    Just a simple clean wrapper around
+    `network.WLAN(network.STA_IF)`.
+    Here just for added convenience.
+    """
+    return network.WLAN(network.STA_IF)
+
+
 async def connectWifi(deviceName) -> bool:
     """
-    Attemmpt to Connect to the configure wifi, assuming a config has been
-    setup. This will always return success if a wifi has been configure, becuase
-    the attempts to connect will continue indefinitly.
+    Attempt to Connect to the configure wifi, assuming a config has been
+    setup. This will always return success if a wifi has been configure, because
+    the attempts to connect will continue indefinitely.
     However, if no credentials are yet setup, this will return a False.
     The connection status of the wifi is obtainable from the _wifi
-    instance via self.getWifi() function.
+    instance via self.getWifi() function.  Which is the same as calling `network.WLAN(network.STA_IF)`
     """
     log.info(__name__, f"Connecting to wifi as [{deviceName}]")
     if not hasCredentials():
@@ -80,7 +90,7 @@ async def connectWifi(deviceName) -> bool:
         return False
 
     network.hostname(deviceName)
-    wifi = network.WLAN(network.STA_IF)
+    wifi = getWifi()
 
     if wifi.isconnected():
         wifi.disconnect()
