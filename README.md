@@ -55,34 +55,33 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
 
 
 # Easy Install
-- install `pipenv`.
-  ```
-  pip3 install pipenv
-  ```
 - Clone this repo
   ```
   git clone https://github.com/shaneapowell/upython-wifi-setup.git
+  ```
+- install `pipenv`.
+  ```
+  pip3 install pipenv
   ```
 - Plug in your micropython esp32 device usb to your computer.  The `Pipfile` has `/dev/ttyACM0` hard-coded as your upy device.
 - Sync the pipenv venv packages. This is only needed once, or with any new updates to the `Pipfile`.
   ```
   pipenv sync
   ```
+- Install the [microdot](https://github.com/miguelgrinberg/microdot) and [utemplate](https://github.com/pfalcon/utemplate/) package dependencies into `/lib` on the device
+  ```sh
+  pipenv run deploy_dependencies
+  ```
+- Optional build the pre-compiled parts. Optional because the `dist` folder should already have the most recent-pre-compiled.
+  Note: YOu'll see some like `ModulenotFoundError: No Module named `_uwifisetup/complete_html`. You can safely ignore those.
+  ```sh
+  pipenv run build
+  ```
 - Deploy the code and assets into the `/lib` directory.
-  - If your board doesn't yet have a `/lib` directory. This does no harm to an existing `/lib` directory.
-    ```
-    pipenv run make_lib_dir
-    ```
+  ```sh
+  pipenv run deploy /dev/ttyACM0
   ```
-  pipenv run deploy_library
-  pipenv run deploy_assets
-  ```
-- Install the package dependencies
-  - [microdot](https://github.com/miguelgrinberg/microdot)
-  - [utemplate](https://github.com/pfalcon/utemplate/)
-    ```
-  pipenv run fetch_and_deploy_dependencies
-  ```
+
 - Run the example
   ```
   pipenv run example
@@ -93,17 +92,21 @@ mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
   ```
   Connected tdo wifi Success
   ```
+- Re-Run the example now, to see the wifi connect using your new creds
+  ```sh
+  pipenv run example
+  ```
+- Re-Set your creds to try all over again
+  ```sh
+  pipenv run example_reset
+  ```
 
 # Manual Install
 Because you're the type of person who needs to do things manually.  You can inspect the `Pipfile` for commands to reference.
 - Manually Install the `microdot` and `utemplate` dependencies.
-- Manually copy over the `src/uwifisetup` files.
-- Manually copy over the `src/www` files
+- Manually copy over the `dist/uwifisetup` files to `/lib/uwifisetup`.
+- Manually copy over the `dist/www` files to `/lib/uwifisetup/www`
 
-
-# .mpy files
-## pre-compile the library
-## pre-compile the assets
 
 # Freeze into a custom firmware
 TBD
@@ -132,6 +135,25 @@ Functions and Use Reference
 - included custom css and js
 
 # Development
+- Clone repo
+  ```sh
+  git clone https://github.com/shaneapowell/upython-wifi-setup.git
+  git submodule update
+  ```
+- Modify `setup.py`. Near the top, Comment out the `DEFAULT_TEMPLATE_LOADER_CLASS=utemplate.compiled.Loader`. Uncomment the `#DEFAULT_TEMPLATE_LOADER_CLASS=utemplate.recompile.Loader` line.
+- Deploy dependencies as normal
+  ```sh
+  pipenv run deploy_dependencies
+  ```
+- Deploy raw source files
+  ```sh
+  pipenv run deploy_raw /dev/ttyACM0
+  ```
+- Try it out
+  ```sh
+  pipenv run example
+  pipenv run example_reset
+  ```
 
 # CI
 - pipenv sync

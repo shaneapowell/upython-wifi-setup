@@ -9,6 +9,8 @@ mypy = "==1.8.0"
 mpremote = "==1.22.0"
 rshell = "==0.0.32"
 tox = "==4.14.2"
+mpy-cross = "==1.22.2"
+pydoc-markdown = "*"
 
 [dev-packages]
 
@@ -17,17 +19,31 @@ tox = "==4.14.2"
 
 
 [scripts]
+
+# Checks
 linter = "flake8 src/uwifisetup"
 typechecker = "mypy src/uwifisetup stub  --check-untyped-defs"
 
+# Tests
 tests = "pytest tests"
 test = "pytest -q tests/test_api.py"
 
-make_lib_dir = "rshell -p /dev/ttyACM0 mkdir /pyboard/lib"
-deploy_library = "rshell -p /dev/ttyACM0 cp -r src/uwifisetup /pyboard/lib"
-deploy_assets = "rshell -p /dev/ttyACM0 cp -r src/www /pyboard/lib/uwifisetup"
+# On Device deploy to /lib
 deploy_dependencies = "mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json"
+deploy = "rshell -f tools/deploy_dist.rsh -p"
+deploy_raw = "rshell -f tools/deploy_raw.rsh -p"
 
+# Run
 example = "mpremote run examples/example.py"
 example_reset = "mpremote run examples/example_reset.py"
 reset = "mpremote reset"
+
+# Setup
+dev_setup = "bash -c tools/dev_setup.sh"
+
+# build
+#pull_compiled_assets = "bash -c \"rshell -p /dev/ttyACM0 rm /pyboard/lib/uwifisetup/www/_uwifisetup/*.html\;\" rshell -p /dev/ttyACM0 cp -r /pyboard/lib/uwifisetup/www dist/www\""
+build = "bash -c tools/build.sh"
+
+# Docs
+generate_docs = "bash -c \"pydoc-markdown -p uwifisetup -I src --render-toc >docs/API.md\""

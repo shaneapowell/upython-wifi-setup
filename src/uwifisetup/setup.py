@@ -6,12 +6,19 @@ import machine
 import socket
 import time
 import gc
+import utemplate
 import uwifisetup.wifi as wifi
 import uwifisetup.log as log
 import uwifisetup.util as util
 
+# By default, we use the pre-compiled Loader.
+# If doinG active development, switch to the None loader. Which uses the source Loader.
+# DEFAULT_TEMPLATE_LOADER_CLASS=utemplate.compiled.Loader
+DEFAULT_TEMPLATE_LOADER_CLASS=utemplate.recompile.Loader
+
 # Auto-Determine the path to the default www folder within th is lib. When installed with mip. Don't forget to leave off the leading '/'
-DEFAULT_FILE_ROOT = __file__.replace("setup.py", "")[1:] + "www"
+DEFAULT_FILE_ROOT = '/'.join(__file__.split('/')[:-1])[1:] + "/www"
+
 PORTAL_IP = '172.18.4.1'
 PORTAL_MASK = '255.255.255.0'
 
@@ -150,9 +157,7 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
 
     _portal = Microdot()
     Response.default_content_type = 'text/html'
-    # init_templates(template_dir=FILE_ROOT, loader_class=recompile.Loader)
-    # init_templates(template_dir=FILE_ROOT, loader_class=source.Loader)
-    Template.initialize(template_dir=templateFileRoot)
+    Template.initialize(template_dir=templateFileRoot, loader_class=DEFAULT_TEMPLATE_LOADER_CLASS)
 
 
     def _networksGen():

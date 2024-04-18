@@ -1,0 +1,6 @@
+[submodule "lib/utemplate"]
+	path = lib/utemplate
+	url = https://github.com/pfalcon/utemplate.git
+[submodule "lib/microdot"]
+	path = lib/microdot
+	url = https://github.com/miguelgrinberg/microdot.git
