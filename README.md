@@ -50,9 +50,10 @@ If you wish to move these to a different install location on yoru deivce, you ne
 
 ## MIP
 Install `upython-wifi-setup` with [mpremote](https://docs.micropython.org/en/latest/reference/packages.html#installing-packages-with-mpremote) into `/lib/uwifisetup` on the device.
+This installs the `.mpy` versions of this library, but still uses the `*/*.py` of the dependencies.  For now...
 ```sh
 mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
-mpremote mip install github:shaneapowell/upython-wifi-setup/package-mip.json
+mpremote mip install github:shaneapowell/upython-wifi-setup/package.json
 ```
 
 ## MIP (.py)

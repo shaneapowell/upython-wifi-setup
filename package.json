@@ -1,15 +1,15 @@
 {
     "urls": [
-        ["uwifisetup/__init__.py", "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/__init__.mpy"],
-        ["uwifisetup/setup.py",    "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/setup.mpy"],
-        ["uwifisetup/wifi.py",     "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/wifi.mpy"],
-        ["uwifisetup/log.py",      "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/log.mpy"],
-        ["uwifisetup/util.py",     "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/util.mpy"],
+        ["uwifisetup/__init__.mpy", "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/__init__.mpy"],
+        ["uwifisetup/setup.mpy",    "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/setup.mpy"],
+        ["uwifisetup/wifi.mpy",     "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/wifi.mpy"],
+        ["uwifisetup/log.mpy",      "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/log.mpy"],
+        ["uwifisetup/util.mpy",     "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/util.mpy"],
 
-        ["uwifisetup/www/_uwifisetup/complete.html",      "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/complete_html.mpy"],
-        ["uwifisetup/www/_uwifisetup/list_networks.html", "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/list_networks_html.mpy"],
-        ["uwifisetup/www/_uwifisetup/try_connect.html",   "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/try_connect_html.mpy"],
-        ["uwifisetup/www/_uwifisetup/welcome.html",       "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/welcome_html.mpy"],
+        ["uwifisetup/www/_uwifisetup/complete_html.mpy",      "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/complete_html.mpy"],
+        ["uwifisetup/www/_uwifisetup/list_networks_html.mpy", "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/list_networks_html.mpy"],
+        ["uwifisetup/www/_uwifisetup/try_connect_html.mpy",   "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/try_connect_html.mpy"],
+        ["uwifisetup/www/_uwifisetup/welcome_html.mpy",       "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/welcome_html.mpy"],
 
         ["uwifisetup/www/_uwifisetup/assets/custom.css",           "github:shaneapowell/upython-wifi-setup/src/www/_uwifisetup/assets/custom.css"],
         ["uwifisetup/www/_uwifisetup/assets/custom.js",            "github:shaneapowell/upython-wifi-setup/src/www/_uwifisetup/assets/custom.js"],
