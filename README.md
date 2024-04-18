@@ -56,8 +56,9 @@ mpremote mip install github:shaneapowell/upython-wifi-setup/package.json
 ```
 
 ## MIP (.py)
-You can optionally install the non .mpy original source
+You can optionally install the non .mpy original source.
 ```sh
+mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
 mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
 ```
 
