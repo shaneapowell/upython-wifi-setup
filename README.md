@@ -70,10 +70,16 @@ mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
 ```
 
 ## Try It Out!
-Copy the `example.py` file to your local system, and run it with `mpremote`
+Copy the `example.py` file to your local system, and run it with `mpremote`. Follow the steps to connect to your wifi.
 ```sh
 wget https://raw.githubusercontent.com/shaneapowell/upython-wifi-setup/main/examples/example.py
 mpremote run example.py
+```
+
+- Re-Run the above example.py file again to then see it connect to your wifi.
+- you can reset/clear the `creds.json` file to try it all again.
+```sh
+mpremote rm /creds.json
 ```
 
 # Install (Easy)
