@@ -29,7 +29,7 @@ tests = "pytest tests"
 test = "pytest -q tests/test_api.py"
 
 # On Device deploy to /lib
-deploy_dependencies = "mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json"
+deploy_deps = "mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json"
 deploy = "rshell -f tools/deploy_dist.rsh -p"
 deploy_raw = "rshell -f tools/deploy_raw.rsh -p"
 
