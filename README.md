@@ -47,25 +47,35 @@ If you wish to move these to a different install location on yoru deivce, you ne
 
 
 # Easiest Install
-This will put all the source and asset files into the device `/lib` directory.  You'll have to manually move the `www` content if you wish to customize things.
-```
+
+## MIP
+Install `upython-wifi-setup` with [mpremote](https://docs.micropython.org/en/latest/reference/packages.html#installing-packages-with-mpremote) into `/lib/uwifisetup` on the device.
+```sh
 mpremote mip install "github:shaneapowell/upython-wifi-setup/package-deps.json"
-mpremote mip install "github:shaneapowell/upython-wifi-setup/package.json"
+mpremote mip install github:shaneapowell/upython-wifi-setup/package.json
+```
+
+## MIP (.py)
+You can optionally install the non .mpy original source
+```sh
+mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
 ```
 
 
 # Easy Install
 - Clone this repo
-  ```
+  ```sh
   git clone https://github.com/shaneapowell/upython-wifi-setup.git
+  git submodule init
+  git submodule update
   ```
 - install `pipenv`.
-  ```
+  ```sh
   pip3 install pipenv
   ```
 - Plug in your micropython esp32 device usb to your computer.  The `Pipfile` has `/dev/ttyACM0` hard-coded as your upy device.
 - Sync the pipenv venv packages. This is only needed once, or with any new updates to the `Pipfile`.
-  ```
+  ```sh
   pipenv sync
   ```
 - Install the [microdot](https://github.com/miguelgrinberg/microdot) and [utemplate](https://github.com/pfalcon/utemplate/) package dependencies into `/lib` on the device
