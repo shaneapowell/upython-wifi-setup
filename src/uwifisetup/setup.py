@@ -6,15 +6,13 @@ import machine   # type: ignore [import-not-found]
 import socket
 import time
 import gc
-# from utemplate import source  # type: ignore [import-untyped]
-from utemplate import compiled  # type: ignore [import-untyped]
 import uwifisetup.wifi as wifi
 import uwifisetup.log as log
 import uwifisetup.util as util
 
 # By default, we use the pre-compiled Loader.
 # If doinG active development, switch to the None loader. Which uses the source Loader.
-DEFAULT_TEMPLATE_LOADER_CLASS = compiled.Loader
+# DEFAULT_TEMPLATE_LOADER_CLASS = compiled.Loader
 # DEFAULT_TEMPLATE_LOADER_CLASS = recompile.Loader
 
 # Auto-Determine the path to the default www folder within th is lib. When installed with mip. Don't forget to leave off the leading '/'
@@ -42,7 +40,8 @@ async def setupWifi(deviceName: str,
                     welcomeMessage: str,
                     completeMessage: str,
                     templateFileRoot: str = DEFAULT_FILE_ROOT,
-                    resetDeviceWhenSetupComplete: bool = False):
+                    resetDeviceWhenSetupComplete: bool = False,
+                    usePreCompiledTemplates: bool = True):
     """
     Run the setup portal websever and capture dns server.
     This is done in an async, so you must await this.
@@ -59,6 +58,10 @@ async def setupWifi(deviceName: str,
         If you decide to move where the assets are contained, or which to modify them and use different assets, you can specify the final location with this
         parameter. This is especially necessary if you decide to `freeze` all your code and dependencies in a custom build firmware. Asset files must remain
         on the main data filesystem.
+
+    `usePreCompiledTemplates`: indicates to the utemplate engine that the template files are already built into .py or .mpy files.  Therefor, use the
+        `compiled` loader.  Set this to `False` to use the `source` loader. Which will attempt to find the raw `*.html` template files, and real-time compile
+        them into the appropriate .py file.  If you are using custom templates for this library, you might want to set this to False.
 
     resetDeviceWhenSetupComplete: Due to memory limitation, it is wise to reset this device after the setup is complete to free up resources.
     """
@@ -89,10 +92,10 @@ async def setupWifi(deviceName: str,
     # Run the portal, and wait for it
     asyncio.create_task(_startDnsServer())
     await _startPortalWebServer(templateFileRoot=templateFileRoot,
-                                deviceName=deviceName,
                                 appName=appName,
                                 welcomeMessage=welcomeMessage,
-                                completeMessage=completeMessage)
+                                completeMessage=completeMessage,
+                                usePreCompiledTemplates=usePreCompiledTemplates)
 
     # Shutdown the DNS service. The dns will get a AP DOWN exception when we shut down the ap below
     _dnsServerRunning = False
@@ -157,7 +160,11 @@ async def _startDnsServer():
     dnsSocket.close()
 
 
-async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName: str, welcomeMessage: str, completeMessage: str):
+async def _startPortalWebServer(templateFileRoot: str,
+                                appName: str,
+                                welcomeMessage: str,
+                                completeMessage: str,
+                                usePreCompiledTemplates: bool):
     """
     Start up the async microdot server to serve up our captive portal pages.
     Pass in an already setup and configured AccessPoint Interface Instance
@@ -169,7 +176,15 @@ async def _startPortalWebServer(templateFileRoot: str, deviceName: str, appName:
 
     _portal = Microdot()
     Response.default_content_type = 'text/html'
-    Template.initialize(template_dir=templateFileRoot, loader_class=DEFAULT_TEMPLATE_LOADER_CLASS)
+
+    if usePreCompiledTemplates:
+        from utemplate import source  # type: ignore [import-untyped]
+        templateLoaderClass = source.Loader
+    else:
+        from utemplate import compiled  # type: ignore [import-untyped]
+        templateLoaderClass = compiled.Loader
+
+    Template.initialize(template_dir=templateFileRoot, loader_class=templateLoaderClass)
 
 
     def _networksGen():
