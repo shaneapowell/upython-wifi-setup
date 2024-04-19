@@ -22,6 +22,10 @@ Inspired by https://github.com/george-hawkins/micropython-wifi-setup
 - Easy to build your project upon if desired.
 - Easy to modify to make it your own.
 
+# Tested On
+- SEEED Xaio ESP32-S3
+- SEEED Xaio ESP32-C3
+
 # Dependencies
 The following 2 libraries are required dependencies.  Recommended you drop these into your `/lib` directory on your device
 - [utemplate](https://github.com/pfalcon/utemplate)
@@ -100,7 +104,7 @@ mpremote rm /creds.json
   ```
 - Install the [microdot](https://github.com/miguelgrinberg/microdot) and [utemplate](https://github.com/pfalcon/utemplate/) package dependencies into `/lib` on the device
   ```sh
-  pipenv run deploy_dependencies
+  pipenv run deploy_deps
   ```
 - Optional build the pre-compiled parts. Optional because the `dist` folder should already have the most recent-pre-compiled.
   Note: YOu'll see some like `ModulenotFoundError: No Module named `_uwifisetup/complete_html`. You can safely ignore those.
