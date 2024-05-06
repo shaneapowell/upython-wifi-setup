@@ -1,4 +1,4 @@
-{% args appName, ssid, connectFunc %}
+{% args appName, ssid, isOpen, connectFunc %}
 {% include "/_uwifisetup/_top.html" %}
 
 <script>
@@ -31,8 +31,7 @@
 
             <form method="post">
 
-                <input type="hidden" id="ssid" name="ssid" value="{{ ssid }}"/>
-
+                {% if not isOpen %}
                 <p>
                     <label for="password" class="field mb-zero">
                         <input type="password" id="password" name="password" value=""/>
@@ -40,6 +39,7 @@
                     </label>
                     <a class="fs-small" href="#" onclick="togglePasswordVisibility()">(Show/Hide Password)</a>
                 </p>
+                {% endif %}
 
                 <button type="submit" class="button -block">Connect</button>
 

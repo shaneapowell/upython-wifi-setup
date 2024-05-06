@@ -1,3 +1,4 @@
+
 from microdot.microdot import Microdot, Response  # type: ignore [import-untyped]
 from microdot.utemplate import Template   # type: ignore [import-untyped]
 import uasyncio as asyncio
@@ -30,7 +31,7 @@ MIME = {
     ".svg": "image/svg+xml"
 }
 
-_wifi = network.WLAN(network.STA_IF)
+_wlan = network.WLAN(network.STA_IF)
 _portal = None
 _dnsServerRunning = True
 
@@ -195,10 +196,12 @@ async def _startPortalWebServer(templateFileRoot: str,
         (ssid, bssid, channel, RSSI, authMode, hidden )
         We'll return only the (SSID, RSSI, AuthType)
         """
-        global _wifi
-        _wifi.active(True)
+        global _wlan
+        _wlan.active(True)
+        if _wlan.isconnected():
+            _wlan.disconnect()
         log.info(__name__, "Scanning for available wifi networks...")
-        scanResult = [(n[0].decode(), n[3], n[4]) for n in _wifi.scan() if n[5] is False and len(n[0]) > 0]
+        scanResult = [(n[0].decode(), n[3], n[4]) for n in _wlan.scan() if n[5] is False and len(n[0]) > 0]
         scanResult.sort(key=lambda r: r[1], reverse=True)  # Sort by RSSI
         log.info(__name__, f"Wifi Scan Result: [{scanResult}]")
         uniqueNames = set()
@@ -243,12 +246,11 @@ async def _startPortalWebServer(templateFileRoot: str,
         """
         attemptConnect = False
 
-        # The GET is coming from the previous network list page
-        if request.method == 'GET':
-            ssid = request.args['ssid']
-        else:
-            # Post should be connection attempt request
-            ssid = request.form.get("ssid")
+        ssid = request.args['ssid']
+        isOpen = "true" in request.args['isopen']
+
+        # Post should be connection attempt request
+        if request.method == 'POST':
             password = request.form.get("password")
             attemptConnect = True
 
@@ -258,8 +260,8 @@ async def _startPortalWebServer(templateFileRoot: str,
             A per-attempt callback function to attempt to connect to the indicated wifi.
             Returns a tuple with the (bool:success, str:message) values.
             """
-            global _wifi
-            _wifi.active(True)
+            global _wlan
+            _wlan.active(True)
             log.info(__name__, f"Attempting to connect WiFi to [{ssid}]")
 
             success = False
@@ -269,16 +271,18 @@ async def _startPortalWebServer(templateFileRoot: str,
 
                 try:
                     # Attempt connection ...
-                    if _wifi.isconnected():
-                        _wifi.disconnect()
-                    _wifi.connect(ssid, password)
+                    if _wlan.isconnected():
+                        _wlan.disconnect()
+
+                    time.sleep(0.5)
+                    _wlan.connect(ssid, password)
 
                     # Wait for the connection. We'll timeout after 10 seconds.
                     result = None
                     sleepTime = 0
                     while True:
                         time.sleep(0.5)
-                        result = _wifi.status()
+                        result = _wlan.status()
                         if result != network.STAT_CONNECTING:
                             break
                         sleepTime += 1
@@ -291,7 +295,7 @@ async def _startPortalWebServer(templateFileRoot: str,
                     else:
                         if result == network.STAT_GOT_IP:
                             success = True
-                            message = f"Success\n({_wifi.ifconfig()[0]})"
+                            message = f"Success\n({_wlan.ifconfig()[0]})"
                             wifi.saveCredentials(ssid, password)
                         elif result == network.STAT_WRONG_PASSWORD:
                             message = "Password Error"
@@ -311,6 +315,7 @@ async def _startPortalWebServer(templateFileRoot: str,
         return Template(request.path).generate_async(
             appName=appName,
             ssid=ssid,
+            isOpen=isOpen,
             connectFunc=cf
         )
 
@@ -322,10 +327,10 @@ async def _startPortalWebServer(templateFileRoot: str,
         All done.   What to do next. etc.
         Continue to reboot.
         """
-        global _wifi
+        global _wlan
         return Template(request.path).generate_async(
             appName=appName,
-            ipAddress=_wifi.ifconfig()[0],
+            ipAddress=_wlan.ifconfig()[0],
             completeMessage=completeMessage
         )
 

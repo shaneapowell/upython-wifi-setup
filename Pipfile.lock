@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a8b2afbf615fa674fbd65b0ebba9aa9ec2f19045232931c7142d27b7d1e10005"
+            "sha256": "126ae9fa3fb4da81c9e3a12877e74e12d03088e189b3a395ece340ca916600c9"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -355,6 +355,23 @@
             "markers": "python_version >= '3.6'",
             "version": "==0.7.0"
         },
+        "micropython-esp32-stubs": {
+            "hashes": [
+                "sha256:45fdb66cdb74ef88acb09a986326419d77c668085531dff2b7bfc05a8b929131",
+                "sha256:56a1d1f9f03aefc232a7ad4a08e4d99f69a288b0b18acecbed257f19d8569a7a"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8' and python_version < '4.0'",
+            "version": "==1.22.0.post1"
+        },
+        "micropython-stdlib-stubs": {
+            "hashes": [
+                "sha256:0e20e044f24b7f5d67205fd08780aa4ca0ea3741e4d14406ff7dca1ed8364f49",
+                "sha256:a455a01a5d7700ef99124072d94c967d5123778512260d87679e47e57f81e3d8"
+            ],
+            "markers": "python_version >= '3.8' and python_version < '4.0'",
+            "version": "==1.1.2"
+        },
         "mpremote": {
             "hashes": [
                 "sha256:dbde10972819c1e0491d883adb8cbd17288246739adabddbf4a172e61ae00220",
@@ -469,11 +486,11 @@
         },
         "pluggy": {
             "hashes": [
-                "sha256:7db9f7b503d67d1c5b95f59773ebb58a8c1c288129a88665838012cfb07b8981",
-                "sha256:8c85c2876142a764e5b7548e7d9a0e0ddb46f5185161049a79b7e974454223be"
+                "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1",
+                "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==1.4.0"
+            "version": "==1.5.0"
         },
         "pycodestyle": {
             "hashes": [

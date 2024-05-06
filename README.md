@@ -47,7 +47,23 @@ This is the library python files.  These files need to be in the `/lib` or the `
 ## `www` - The Assets
 This is the assets directory.  Contains the `.html` template files, and a handfull of image and css assets.
 These files by default are loaded from `/lib/uwifisetup/www` from your device. That is the default install location using the mip install method below.
-If you wish to move these to a different install location on yoru deivce, you need only specify a different `templateFileRoot` parameter to `setup.setupWifi(...)`
+
+If you happen to be building an IOT web-app, then you might wish to modify the portal template and css files to match your desired look-and-feel.  You might also then want to use the same template and asset structure in your main web-app.  Moving the `www` directory and contents to a common location on your device allows you full access and control of the files.
+
+To move these to a different install location on your deivce, you need only specify a different `templateFileRoot` parameter to `setup.setupWifi(...)`.   The simplest thing to do is to move the `www` folder to the root of your micropython filesystem, and pass just `wwww` to the setupWifi function.
+```python
+await setup.setupWifi(templateFileRoot='www'...)
+```
+You can now setup your own `microdot` web-server, with your own template files within the `www` directory, and include the `_top.html` and `_bottom.html` and `_start.html` wrapper template files to mimic the look and feel and functionality.  Reference the `welcome.html` and `list_networks.html` for example use.
+
+Simply put, you need to reference any common assets offered up by this wifi setup with the relative path of `uwifisetup/<file>` .
+```
+{% include "_uwifisetup/_bottom.html" %}
+```
+or
+```
+<img class="f-right" src="/_uwifisetup/assets/network_wifi_{{ numBars }}_bar{{ showLock }}_48px.svg"/>
+```
 
 
 # Install (EASIEST)

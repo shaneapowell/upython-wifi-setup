@@ -33,12 +33,14 @@
 
                 {% if network[2] > 0 %}
                     {% set showLock = "_locked" %}
+                    {% set isOpen = "false" %}
                 {% else %}
                     {% set showLock = "" %}
+                    {% set isOpen = "true" %}
                 {% endif %}
 
                 <p>
-                    <a href="/_uwifisetup/try_connect.html?ssid={{ ssid }}" class="ta-left">{{ ssid }}</a>
+                    <a href="/_uwifisetup/try_connect.html?ssid={{ ssid }}&isopen={{ isOpen }}" class="ta-left">{{ ssid }}</a>
                     <img class="f-right" src="/_uwifisetup/assets/network_wifi_{{ numBars }}_bar{{ showLock }}_48px.svg"/>
                 </p>
 
