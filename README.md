@@ -90,7 +90,8 @@ mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
 ```
 
 ## Try It Out!
-Copy the `example.py` file to your local system, and run it with `mpremote`. Follow the steps to connect to your wifi.
+After doing one of the above install steps.. you can give it a try it out with the following.
+Copy the `example.py` file to your local system on your computer, and run it with `mpremote`. Follow the steps to connect to your wifi.
 ```sh
 wget https://raw.githubusercontent.com/shaneapowell/upython-wifi-setup/main/examples/example.py
 mpremote run example.py
@@ -174,7 +175,7 @@ The `.py` files are more than just what is in the `src/uwifisetup` directory.  T
 I copied the `src/uwifisetup` into the micropython firmware `modules` directory.  I also copied over the `src/www/_uwifisetup/*.py` files. Finally, the non .py files found in the `src/www/_uwifisetup` directory must be placed into the main filesystem of your device. They cannot be pre-frozen as they are not source files.
 
 # Credentials
-The access point name, and wifi password are stored in a plain text json file `creds.json` in the root of the data parition.
+The access point name, and wifi password are stored in a plain text json file `creds.json` in the root of the data partition.
 
 # Reference
 Functions and Use Reference
@@ -192,9 +193,19 @@ Functions and Use Reference
 -
 
 # How to incorporate what this library provides into your project
-- include udot web server
-- included cutestrap css
-- included custom css and js
+If you are like me, you will want to use this library, but, make it look like your project/theme.
+In that case, it'll be simply up to you to modify the `.css` and `.html` files to your needs.  If you wish to just leverage what this library already provides, you can keep the `.css` and `.html` files unmodified, and include them in your own app.
+
+Look at how the `examples/example.py` file runs this wifi setup library.
+It only creates the `microdot` webserver instance if it needs to during the `setup` stage.  If you have no need for a webserver in your project, you don't need to do anything.   If however, you wish to also serve up your own content, but use the templates and css provided by this library.  You'll have to do a little work.  But, not as much as you think.
+
+## What to Do
+- Move the `www` templates and assets to the device root `/`
+- Modify the `setup(...)` function, passing in a new `templateFileRoot='www'` value.
+- Add your own html, template and assets to the `www` directory.
+- Setup your own microdot web-server to provide access to the html and assets files.
+- Include the already, ready-to-go, `_start.html`, `_top.html` and `_bottom.html` template
+
 
 # Development
 - Clone repo
@@ -218,9 +229,11 @@ Functions and Use Reference
   ```
 
 # CI
-- pipenv sync
-- pipenv run linter
-- pipenv run typechecker
+```sh
+pipenv sync
+pipenv run linter
+pipenv run typechecker
+```
 
 
 # Reference
