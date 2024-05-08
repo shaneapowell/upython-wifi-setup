@@ -1,8 +1,8 @@
 
 from microdot.microdot import Microdot, Response  # type: ignore [import-untyped]
 from microdot.utemplate import Template   # type: ignore [import-untyped]
-import uasyncio as asyncio
-import network
+import uasyncio as asyncio   # type: ignore [import-untyped]
+import network   # type: ignore [import-untyped, import-not-found]
 import machine   # type: ignore [import-not-found]
 import socket
 import time

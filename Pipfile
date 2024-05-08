@@ -23,7 +23,7 @@ micropython-esp32-stubs = ">=1.22"
 
 # Checks
 linter = "flake8 src/uwifisetup"
-typechecker = "mypy src/uwifisetup stub  --check-untyped-defs"
+typechecker = "python -m mypy src/uwifisetup  --check-untyped-defs"
 
 # Tests
 tests = "pytest tests"
@@ -31,7 +31,8 @@ test = "pytest -q tests/test_api.py"
 
 # build
 #pull_compiled_assets = "bash -c \"rshell -p /dev/ttyACM0 rm /pyboard/lib/uwifisetup/www/_uwifisetup/*.html\;\" rshell -p /dev/ttyACM0 cp -r /pyboard/lib/uwifisetup/www dist/www\""
-build = "bash -c tools/build.sh"
+compile = "bash -c tools/compile.sh"
+clean = "bash -c tools/clean.sh"
 
 # On Device deploy to /lib
 deploy_deps = "mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json"

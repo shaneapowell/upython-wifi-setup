@@ -1,5 +1,5 @@
-import uasyncio as asyncio
-import network
+import uasyncio as asyncio  # type: ignore [import-untyped, import-not-found]
+import network    # type: ignore [import-untyped, import-not-found]
 import os
 import json
 import uwifisetup.log as log

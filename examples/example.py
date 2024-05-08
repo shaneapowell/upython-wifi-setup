@@ -21,7 +21,8 @@ async def main():
                               appName="My App",
                               welcomeMessage="Time to setup your device WiFi",
                               completeMessage="Your device will now restart. You may access your device with your webbrowser on your phone or laptop",
-                              resetDeviceWhenSetupComplete=True)
+                              resetDeviceWhenSetupComplete=True,
+                              usePreCompiledTemplates=False)
 
 
 asyncio.get_event_loop().run_until_complete(main())
