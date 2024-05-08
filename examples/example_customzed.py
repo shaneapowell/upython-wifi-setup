@@ -7,7 +7,8 @@ import uasyncio as asyncio
 from microdot.microdot import Microdot, Response  # type: ignore [import-untyped]
 from microdot.utemplate import Template   # type: ignore [import-untyped]
 from utemplate import source, recompile, compiled
-
+import uwifisetup.util as util
+import uwifisetup.log as log
 
 async def start():
     app = Microdot()

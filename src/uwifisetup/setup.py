@@ -47,7 +47,7 @@ async def setupWifi(deviceName: str,
     Run the setup portal websever and capture dns server.
     This is done in an async, so you must await this.
 
-    deviceName`: What  you'll see broadcast as the available Access Point Name
+    `deviceName`: What  you'll see broadcast as the available Access Point Name
 
     `appName`: is the title put at the top of the welcome page on the portal.
 
@@ -64,7 +64,7 @@ async def setupWifi(deviceName: str,
         `compiled` loader.  Set this to `False` to use the `source` loader. Which will attempt to find the raw `*.html` template files, and real-time compile
         them into the appropriate .py file.  If you are using custom templates for this library, you might want to set this to False.
 
-    resetDeviceWhenSetupComplete: Due to memory limitation, it is wise to reset this device after the setup is complete to free up resources.
+    `resetDeviceWhenSetupComplete`: Due to memory limitation, it is wise to reset this device after the setup is complete to free up resources.
     """
     global _dnsServerRunning
 

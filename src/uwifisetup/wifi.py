@@ -14,8 +14,8 @@ _KEY_PWD = "pwd"
 def hasCredentials() -> bool:
     """
     return the credentials status. If the setup has run,
-    we'll have valid credentails on hand.  return True
-    If not, .. well.. we won't. return False
+    we'll have valid credentails on hand.  return `True`
+    If not,  return `False`
     """
     return util.file_exists(CREDS_FILE)
 
@@ -72,7 +72,7 @@ def getWifi():
 async def connectWifi(deviceName) -> bool:
     """
     Attempt to Connect to the configure wifi, assuming a config has been
-    setup. This will always return success if a wifi has been configure, because
+    setup. This will always return success if a wifi has been configured, because
     the attempts to connect will continue indefinitely.
     However, if no credentials are yet setup, this will return a False.
     The connection status of the wifi is obtainable from the _wifi
