@@ -22,6 +22,11 @@ Inspired by https://github.com/george-hawkins/micropython-wifi-setup
 - Easy to build your project upon if desired.
 - Easy to modify to make it your own.
 
+# Future Plans
+- Self-Installing templates and assets into data directory on device.
+- Unit Tests!
+- Easier Theming
+
 # Tested On
 - SEEED Xaio ESP32-S3
 - SEEED Xaio ESP32-C3
