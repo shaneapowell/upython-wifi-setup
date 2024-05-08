@@ -95,8 +95,11 @@ async def connectWifi(deviceName) -> bool:
     if wifi.isconnected():
         wifi.disconnect()
 
+    # Attempt to minimize the all to frequent "wifi internal error"
     wifi.active(False)
+    await asyncio.sleep(0.5)
     wifi.active(True)
+    await asyncio.sleep(0.5)
     wifi.config(pm=wifi.PM_NONE)
 
     wifi.connect(creds[0], creds[1])
