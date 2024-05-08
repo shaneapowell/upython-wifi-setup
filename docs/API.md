@@ -139,7 +139,7 @@ def getWifi()
 Return the singleton wifi instance.
 Just a simple clean wrapper around
 `network.WLAN(network.STA_IF)`.
-Here just for added convenience.
+Here just for added convence.
 
 <a id="uwifisetup.wifi.connectWifi"></a>
 
