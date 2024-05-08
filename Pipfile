@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 flake8 = "==7.0.0"
-mypy = "==1.9.0"
+mypy = "==1.10.0"
 mpremote = "==1.22.0"
 rshell = "==0.0.32"
 tox = "==4.14.2"
