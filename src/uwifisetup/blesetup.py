@@ -39,9 +39,6 @@ _ADV_INTERVAL_US = const(250000)
 _wlan = network.WLAN(network.STA_IF)
 
 
-class _CompleteException(Exception):
-    pass
-
 
 async def setupWifi(
         deviceName: str,
@@ -97,19 +94,25 @@ async def setupWifi(
                     con, data = await rx_char.written(timeout_ms=1000)
                     rawReq = data.decode()
                     log.info(__name__, f"rx: {rawReq}")
-                    await _processRequest(rawReq=rawReq, tx=tx_char, deviceName=deviceName, deviceInfo=deviceInfo)
+                    isComplete = await _processRequest(
+                        rawReq=rawReq,
+                        tx=tx_char,
+                        deviceName=deviceName,
+                        deviceInfo=deviceInfo)
+                    if isComplete:
+                        await connection.disconnect()
                 except asyncio.TimeoutError:
                     # We dont' really care. Just need a away to not hold us up if the connection closes
                     pass
-                except _CompleteException:
-                    isComplete = True
                 except Exception as e:
                     log.error(__name__, "Unexpected Error", ex=e)
-                    _sendResponse(tx=tx_char, rawResp=_generateErrorResponse(req=None, msg="Unexpected Error"))
+                    if connection.is_connected():
+                        _sendResponse(tx=tx_char, rawResp=_generateErrorResponse(req=None, msg="Unexpected Error"))
 
-                asyncio.sleep_ms(100)
 
-    log.info(__name__, f"BLE Setup Complete... reset device [{resetDeviceWhenSetupComplete}]")
+                asyncio.sleep_ms(10)
+
+    log.info(__name__, f"BLE WiFi Setup Complete... reset device [{resetDeviceWhenSetupComplete}]")
     if resetDeviceWhenSetupComplete:
         machine.reset()
 
@@ -235,40 +238,46 @@ def _attemptConnectWifi(tx: aioble.Characteristic, reqModel: dict):
         return _sendResponse(tx=tx, rawResp=_generateErrorResponse(req=REQ_CONNECT_TO_WIFI, msg=f"Unexpected Exception [{e}]"))
 
 
-async def _processRequest(rawReq: str, tx: aioble.Characteristic, deviceName: str, deviceInfo: dict = {}):
+async def _processRequest(rawReq: str, tx: aioble.Characteristic, deviceName: str, deviceInfo: dict = {}) -> bool:
     """
     Take the raw string json request, process the command, and return
     a json model as a raw string.
+    Return TRUE when a `complete` request is processed.  False for all else.
     """
     reqModel = json.loads(rawReq)
 
     if reqModel is None:
-        return _sendResponse(tx, _generateErrorResponse(req=None, msg="Received Empty Request"))
+        _sendResponse(tx, _generateErrorResponse(req=None, msg="Received Empty Request"))
+        return False
 
     if FIELD_REQ not in reqModel:
-        return _sendResponse(tx, _generateErrorResponse(req=None, msg=f"Missing [{FIELD_REQ}]"))
+        _sendResponse(tx, _generateErrorResponse(req=None, msg=f"Missing [{FIELD_REQ}]"))
+        return False
 
     req = reqModel[FIELD_REQ]
 
     if req == REQ_GET_DEVICE_INFO:
-        return _sendResponse(
+        _sendResponse(
             tx=tx,
             rawResp=_generateResponse(
                 req=req,
                 values={FIELD_DEVICE_NAME: deviceName} | deviceInfo
             )
         )
+        return False
 
     if req == REQ_CONNECT_TO_WIFI:
-        return _attemptConnectWifi(tx=tx, reqModel=reqModel)
+        _attemptConnectWifi(tx=tx, reqModel=reqModel)
+        return False
 
     if req == REQ_GET_AVAILABLE_WIFI:
-        return _sendAvailableWifiResponse(tx)
+        _sendAvailableWifiResponse(tx)
+        return False
 
     if req == REQ_COMPLETE:
         _sendResponse(tx, _generateResponse(req=req))
         await asyncio.sleep(0.2)
-        raise _CompleteException
+        return True
 
-
-    return _sendResponse(tx, _generateErrorResponse(req=req, msg="Unknown Request"))
+    _sendResponse(tx, _generateErrorResponse(req=req, msg="Unknown Request"))
+    return False
