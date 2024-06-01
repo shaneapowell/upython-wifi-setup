@@ -1,6 +1,8 @@
 # Work In Progress
 **This library is still under active development.**
 
+# New Features
+- BLE UART Setup
 
 # uPython Wifi Setup
 A simple to install setup and use WiFi Setup Portal for micropython based ESP32 boards.
@@ -21,7 +23,7 @@ Inspired by https://github.com/george-hawkins/micropython-wifi-setup
 - Easy to integrate into your existing projects.
 - Easy to build your project upon if desired.
 - Easy to modify to make it your own.
-- bluetooth LE UART Setup Support
+- **(new)** Bluetooth LE UART Setup Support
 
 # Future Plans
 - Self-Installing templates and assets into data directory on device.
