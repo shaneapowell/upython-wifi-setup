@@ -303,7 +303,7 @@ pipenv run example_ble
 
 ### Example Message Sequence
 Plug in the values to match your local wifi, but you can try this sequence with the uRF toolbox mobile app.
-```json
+```
 TX:{"req": "get_device_info"}
 RX:{"resp": "get_device_info", "resp_code": "ok", "device_name": "MyPyDevice", "uuid": "123456"}
 
