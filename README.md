@@ -1,6 +1,8 @@
 # Work In Progress
 **This library is still under active development.**
 
+# New Features
+- BLE UART Setup
 
 # uPython Wifi Setup
 A simple to install setup and use WiFi Setup Portal for micropython based ESP32 boards.
@@ -21,6 +23,7 @@ Inspired by https://github.com/george-hawkins/micropython-wifi-setup
 - Easy to integrate into your existing projects.
 - Easy to build your project upon if desired.
 - Easy to modify to make it your own.
+- **(new)** Bluetooth LE UART Setup Support
 
 # Future Plans
 - Self-Installing templates and assets into data directory on device.
@@ -32,7 +35,7 @@ Inspired by https://github.com/george-hawkins/micropython-wifi-setup
 - SEEED Xaio ESP32-C3
 
 # Dependencies
-The following 2 libraries are required dependencies.  Recommended you drop these into your `/lib` directory on your device
+The following 3 libraries are required dependencies.  Recommended you drop these into your `/lib` directory on your device
 - [utemplate](https://github.com/pfalcon/utemplate)
   - copy the directory `utemplate` in the repo to `/lib/utemplate` on your device
 - [microdot](https://github.com/miguelgrinberg/microdot)
@@ -41,6 +44,8 @@ The following 2 libraries are required dependencies.  Recommended you drop these
     - `__init__.py`
     - `microdot.py`
     - `utemplate.py`
+- [aioble](https://github.com/micropython/micropython-lib/blob/master/micropython/bluetooth/aioble/README.md) - If you intend to use the `blesetup` module.
+  -  `mpremote mip install aioble`
 
 # The Library Contents
 Made up of 2 main parts. The .py source files, and the assets.
@@ -83,6 +88,7 @@ pip install mpremote
 Install `upython-wifi-setup` into `/lib/uwifisetup` on the device.
 This installs the `.mpy` pre-compiled versions of this library, but still uses the `*.py` of the dependencies.  For now...
 ```sh
+mpremote mip install aioble
 mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json
 mpremote mip install github:shaneapowell/upython-wifi-setup/package.json
 ```
@@ -90,6 +96,7 @@ mpremote mip install github:shaneapowell/upython-wifi-setup/package.json
 ## MIP (.py)
 You can optionally install the non .mpy original source.
 ```sh
+mpremote mip install aioble --no-mpy
 mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json
 mpremote mip install github:shaneapowell/upython-wifi-setup/package-raw.json
 ```
@@ -119,7 +126,8 @@ mpremote rm /creds.json
   ```sh
   pip3 install pipenv
   ```
-- Plug in your micropython esp32 device usb to your computer.  The `Pipfile` has `/dev/ttyACM0` hard-coded as your upy device.
+- Plug in your micropython esp32 device usb to your computer.
+- Update the `.env` file, set the `RSHELL_PORT` with the TTY path to your device.
 - Sync the pipenv venv packages. This is only needed once, or with any new updates to the `Pipfile`.
   ```sh
   pipenv sync
@@ -128,6 +136,10 @@ mpremote rm /creds.json
   ```sh
   pipenv run deploy_deps
   ```
+- Install the [aioble](https://github.com/micropython/micropython-lib/blob/master/micropython/bluetooth/aioble/README.md) if using the blesetup feature.
+  ```sh
+  mpremote mip install aioble
+  ```
 - Optional build the pre-compiled parts. Optional because the `dist` folder should already have the most recent-pre-compiled.
   Note: YOu'll see some like `ModulenotFoundError: No Module named `_uwifisetup/complete_html`. You can safely ignore those.
   ```sh
@@ -135,7 +147,7 @@ mpremote rm /creds.json
   ```
 - Deploy the code and assets into the `/lib` directory.
   ```sh
-  pipenv run deploy /dev/ttyACM0
+  pipenv run deploy
   ```
 
 - Try it Out. Run the example
@@ -182,6 +194,139 @@ I copied the `src/uwifisetup` into the micropython firmware `modules` directory.
 # Credentials
 The access point name, and wifi password are stored in a plain text json file `creds.json` in the root of the data partition.
 
+# BLE UART Mode
+The ability to configure your wifi over BLE Nordic UART has been added.  This feature doesn't include a full UI, but rather a simple json based TX/RX protocol that can be used with your own custom BlueTooth application.
+see the `example_ble.py`. A very basic json based async protocol is implemented with a few very specific request
+commands to handle setting up your wifi.
+
+An important limitation to note is that the messages are limited to 256 characters max. This should not pose a problem for a typical use-case of this protocol.
+
+To play with BLE Uart mode, the mobile app `nRF Toolbox` in the [App Store](https://apps.apple.com/us/app/nrf-toolbox/id820906058) / [Play Store](https://play.google.com/store/apps/details?id=no.nordicsemi.android.nrftoolbox&hl=en_US&gl=US) can be used to send and receive messages.
+
+## Request / Response
+A request json must include at a minimum a `req` field with a known request command code.  Each request code has it's own set of optional and required additional fields.
+
+A response for a request will have the request code echoed back, as well as a response code to indicate the outcome of the request, and any additional information specific to the request.
+
+While the module is async, a request will return a response before another request is accepted.  With the echo-back field of the response model, this protocol has the appearance of being totally async, but it is not.  It is semi-blocking sequential.  Semi-Blocking since the network calls themselves are blocking.
+
+### Response codes
+- `ok`:  You expect a valid set of fields in the json for the given request.
+- `error`: An error was triggered. see the included `msg` field for more info.
+- `done`: A response code unique to the `get_available_wifi` command. These are returned one at a time. The last one is empty with this response code.
+
+
+### Request: `get_device_info`
+#### Request
+```json
+{"req": "get_device_info"}
+```
+#### Response
+Will include the `deviceName` provided to the blesetup.setupWifi() function, and the `deviceInfo` dict values.
+```json
+{"resp": "get_device_info", "resp_code": "ok", "device_name": "MyPyDevice", "uuid": "123456"}
+```
+
+### Request: `get_available_wifi`
+Due to the 256 character limit of the UART characteristic, the request will return a series of wifi response models until a status code of `done` is returned.  You'll need to loop on the responses until the `done` status code.  The wifi responses are returned in order from strongest to weakest by default.
+
+#### Request
+```json
+{"req": "get_available_wifi"}
+```
+
+#### Response
+Expected Response Fields:
+- `ssid` - The STRING SSID of wifi
+- `rssi` - The INT RSSI strength of the wifi
+- `secure` - The INT code of the type of security of this wifi.  see the ESP32 WLAN `scan` function for expected values.
+  - 0 = Open
+  - 1 = WEP
+  - 2 = WPA-PSK
+  - 3 = WPA2-PSK
+  - 4 = WPA/WPA2-PSK
+```json
+{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "My Wifi", "rssi": -71, "secure": 4}
+```
+```json
+{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Bobs Wifi", "rssi": -56, "secure": 4}
+```
+```json
+{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Janes Public", "rssi": -46, "secure": 0}
+```
+```json
+{"resp": "get_available_wifi", "resp_code": "done"}
+```
+
+
+### Request: `connect_to_wifi`
+Request to connect to a wifi.
+The `ssid` and `password` fields are both required, even for an open wifi.  If you are connecting to an unsecure open wifi, just pass a null password value.
+#### Request (protected)
+```json
+{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "abc123"}
+```
+#### Request (open)
+```json
+{"req": "connect_to_wifi", "ssid": "My Wifi", "password": null}
+```
+
+#### Response
+A success response will include your assigned IP address.
+```json
+{"resp": "connect_to_wifi", "resp_code": "ok", "ip_addr": "192.168.0.142"}
+```
+
+Connection Failures will look like
+```json
+{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Incorrect Password"}
+```
+
+### Request: `complete`
+Send the `complete` request, to tell the blesetup system to shutdown and fall out of the await. If the blesetup function included `resetDeviceWhenSetupComplete=True`, then this call will result in the device being reset.
+
+### Request
+```json
+{"req": "complete"}
+```
+
+### Response
+```json
+{"resp": "complete", "resp_code": "ok"}
+```
+
+## Try it out with
+```
+pipenv run example_ble
+```
+
+
+### Example Message Sequence
+Plug in the values to match your local wifi, but you can try this sequence with the uRF toolbox mobile app.
+```json
+TX:{"req": "get_device_info"}
+RX:{"resp": "get_device_info", "resp_code": "ok", "device_name": "MyPyDevice", "uuid": "123456"}
+
+TX:{"req": "get_available_wifi"}
+RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "My Wifi", "rssi": -71, "secure": 4}
+RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Bobs Wifi", "rssi": -56, "secure": 4}
+RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Janes Public", "rssi": -46, "secure": 0}
+RX:{"resp": "get_available_wifi", "resp_code": "done"}
+
+TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "Bad Password"}
+RX:{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Timed Out"}
+TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": null}
+RX:{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Unable to Connect"}
+TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "abc123"}
+RX:{"resp": "connect_to_wifi", "resp_code": "ok", "ip_addr": "192.168.0.142"}
+
+TX:{"req": "complete"}
+RX:{"resp": "complete", "resp_code": "ok"}
+```
+
+
+##
+
 # Reference
 Functions and Use Reference
 
@@ -225,7 +370,7 @@ It only creates the `microdot` webserver instance if it needs to during the `set
   ```
 - Deploy raw source files
   ```sh
-  pipenv run deploy_raw /dev/ttyACM0
+  pipenv run deploy_raw
   ```
 - Try it out
   ```sh

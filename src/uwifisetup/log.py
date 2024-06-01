@@ -1,3 +1,4 @@
+import sys
 
 COLOR_END = '\033[0m'
 COLOR_BLUE = '\033[94m'
@@ -19,8 +20,10 @@ def warn(tag, msg):
     print(f"{COLOR_YELLOW}WARN{COLOR_END}[{tag}] - {msg}")
 
 
-def error(tag, msg):
+def error(tag, msg, ex: Exception | None = None):
     print(f"{COLOR_RED}ERROR{COLOR_END}[{tag}] - {msg}")
+    if ex is not None:
+        sys.print_exception(ex)  # type:ignore [attr-defined]
 
 
 def fatal(tag, msg):

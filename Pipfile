@@ -36,13 +36,16 @@ clean = "bash -c tools/clean.sh"
 
 # On Device deploy to /lib
 deploy_deps = "mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json"
-deploy = "rshell -f tools/deploy_dist.rsh -p"
-deploy_raw = "rshell -f tools/deploy_raw.rsh -p"
+deploy = "rshell -f tools/deploy_dist.rsh"
+deploy_raw = "rshell -f tools/deploy_raw.rsh"
 
 # Run
 example = "mpremote run examples/example.py"
+example_ble = "mpremote run examples/example_ble.py"
 example_reset = "mpremote run examples/example_reset.py"
 reset = "mpremote reset"
+repl = "mpremote repl"
+rshell = "rshell"
 
 
 # Docs
