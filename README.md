@@ -126,7 +126,8 @@ mpremote rm /creds.json
   ```sh
   pip3 install pipenv
   ```
-- Plug in your micropython esp32 device usb to your computer.  The `Pipfile` has `/dev/ttyACM0` hard-coded as your upy device.
+- Plug in your micropython esp32 device usb to your computer.
+- Update the `.env` file, set the `RSHELL_PORT` with the TTY path to your device.
 - Sync the pipenv venv packages. This is only needed once, or with any new updates to the `Pipfile`.
   ```sh
   pipenv sync
@@ -146,7 +147,7 @@ mpremote rm /creds.json
   ```
 - Deploy the code and assets into the `/lib` directory.
   ```sh
-  pipenv run deploy /dev/ttyACM0
+  pipenv run deploy
   ```
 
 - Try it Out. Run the example
@@ -369,7 +370,7 @@ It only creates the `microdot` webserver instance if it needs to during the `set
   ```
 - Deploy raw source files
   ```sh
-  pipenv run deploy_raw /dev/ttyACM0
+  pipenv run deploy_raw
   ```
 - Try it out
   ```sh
