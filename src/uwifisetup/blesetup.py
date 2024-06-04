@@ -30,6 +30,9 @@ CODE_OK = 'ok'
 CODE_DONE = 'done'
 CODE_ERROR = 'error'
 
+_GENERIC_ACCESS = bluetooth.UUID(0x1800)
+_DEVICE_NAME = bluetooth.UUID(0x2A00)
+_DEVICE_APPEARANCE = bluetooth.UUID(0x2A01)
 _UART_UUID = bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
 _UART_TX = bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
 _UART_RX = bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
@@ -66,16 +69,23 @@ async def setupWifi(
 
     log.info(__name__, f"Starting BLE WiFi Setup [{deviceName}]")
 
-    uart_service = aioble.Service(_UART_UUID)
+    uartService = aioble.Service(_UART_UUID)
     # TX: Remote <- This
-    tx_char = aioble.Characteristic(uart_service, _UART_TX, read=True, notify=True)
+    txChar = aioble.Characteristic(uartService, _UART_TX, read=True, notify=True)
     # RX: Remote -> This
-    rx_char = aioble.Characteristic(uart_service, _UART_RX, write=True, capture=True)
+    rxChar = aioble.Characteristic(uartService, _UART_RX, write=True, capture=True)
 
     # Init the RX buffer to our apparent max of 256 bytes
-    rx_char.write(bytearray(256))
+    rxChar.write(bytearray(256))
+    aioble.register_services(uartService)
 
-    aioble.register_services(uart_service)
+    # Override the mpy default device-name characteristic. This seems to work, but if you
+    # inspect the BLE device , it shows the 0x1800 primary service twice.
+    # Seems that this doesn't overwrite the built-in service, but instead adds a 2nd one
+    genericService = aioble.Service(_GENERIC_ACCESS)
+    defaultName = aioble.Characteristic(genericService, _DEVICE_NAME, read=True, notify=True)
+    defaultName.write(deviceName)
+    aioble.register_services(genericService)
 
     isComplete = False
 
@@ -83,7 +93,7 @@ async def setupWifi(
 
         async with await aioble.advertise(interval_us=_ADV_INTERVAL_US,
                                           name=deviceName,
-                                          services=[_UART_UUID],
+                                          services=[_UART_UUID, _GENERIC_ACCESS],
                                           appearance=advertiseAppearance) as connection:
 
             log.info(__name__, f"Connection from {connection.device}")
@@ -91,12 +101,12 @@ async def setupWifi(
             while connection.is_connected():
 
                 try:
-                    con, data = await rx_char.written(timeout_ms=1000)
+                    con, data = await rxChar.written(timeout_ms=1000)
                     rawReq = data.decode()
                     log.info(__name__, f"rx: {rawReq}")
                     isComplete = await _processRequest(
                         rawReq=rawReq,
-                        tx=tx_char,
+                        tx=txChar,
                         deviceName=deviceName,
                         deviceInfo=deviceInfo)
                     if isComplete:
@@ -107,7 +117,7 @@ async def setupWifi(
                 except Exception as e:
                     log.error(__name__, "Unexpected Error", ex=e)
                     if connection.is_connected():
-                        _sendResponse(tx=tx_char, rawResp=_generateErrorResponse(req=None, msg="Unexpected Error"))
+                        _sendResponse(tx=txChar, rawResp=_generateErrorResponse(req=None, msg="Unexpected Error"))
 
 
                 asyncio.sleep_ms(10)
