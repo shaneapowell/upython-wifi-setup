@@ -32,7 +32,7 @@ CODE_ERROR = 'error'
 
 _GENERIC_ACCESS = bluetooth.UUID(0x1800)
 _DEVICE_NAME = bluetooth.UUID(0x2A00)
-_DEVICE_APPEARANCE = bluetooth.UUID(0x2A01)
+
 _UART_UUID = bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
 _UART_TX = bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
 _UART_RX = bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
@@ -77,7 +77,6 @@ async def setupWifi(
 
     # Init the RX buffer to our apparent max of 256 bytes
     rxChar.write(bytearray(256))
-    aioble.register_services(uartService)
 
     # Override the mpy default device-name characteristic. This seems to work, but if you
     # inspect the BLE device , it shows the 0x1800 primary service twice.
@@ -85,7 +84,8 @@ async def setupWifi(
     genericService = aioble.Service(_GENERIC_ACCESS)
     defaultName = aioble.Characteristic(genericService, _DEVICE_NAME, read=True, notify=True)
     defaultName.write(deviceName)
-    aioble.register_services(genericService)
+
+    aioble.register_services(genericService, uartService)
 
     isComplete = False
 
