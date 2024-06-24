@@ -9,7 +9,7 @@ mypy = "==1.9.0"
 mpremote = "==1.22.0"
 rshell = "==0.0.32"
 tox = "==4.14.2"
-mpy-cross = "==1.22.2"
+mpy-cross = "==1.23.0.post2"
 pydoc-markdown = "*"
 micropython-esp32-stubs = ">=1.22"
 
