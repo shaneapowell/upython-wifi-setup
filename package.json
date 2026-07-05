@@ -5,6 +5,7 @@
         ["uwifisetup/wifi.mpy",     "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/wifi.mpy"],
         ["uwifisetup/log.mpy",      "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/log.mpy"],
         ["uwifisetup/util.mpy",     "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/util.mpy"],
+        ["uwifisetup/blesetup.mpy", "github:shaneapowell/upython-wifi-setup/dist/uwifisetup/blesetup.mpy"],
 
         ["uwifisetup/www/_uwifisetup/complete_html.mpy",      "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/complete_html.mpy"],
         ["uwifisetup/www/_uwifisetup/list_networks_html.mpy", "github:shaneapowell/upython-wifi-setup/dist/www/_uwifisetup/list_networks_html.mpy"],

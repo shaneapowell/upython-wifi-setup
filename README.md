@@ -203,6 +203,18 @@ An important limitation to note is that the messages are limited to 256 characte
 
 To play with BLE Uart mode, the mobile app `nRF Toolbox` in the [App Store](https://apps.apple.com/us/app/nrf-toolbox/id820906058) / [Play Store](https://play.google.com/store/apps/details?id=no.nordicsemi.android.nrftoolbox&hl=en_US&gl=US) can be used to send and receive messages.
 
+## Install ONLY BLE Support
+If you wish to include ONLY blue wifi provisioning support, and not bother with any of the html based setup, you can install just the blue support packages and files, reducing the install footprint.
+With this install, there are no asset files installed, just the .mpy or .py files.
+
+### MIP (.mpy)
+Install `upython-wifi-setup` into `/lib/uwifisetup` on the device.
+This installs the `.mpy` pre-compiled versions of this library.
+```sh
+mpremote mip install aioble
+mpremote mip install github:shaneapowell/upython-wifi-setup/package-ble.json
+```
+
 ## Request / Response
 A request json must include at a minimum a `req` field with a known request command code.  Each request code has it's own set of optional and required additional fields.
 
