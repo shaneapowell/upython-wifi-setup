@@ -199,9 +199,29 @@ The ability to configure your wifi over BLE Nordic UART has been added.  This fe
 see the `example_ble.py`. A very basic json based async protocol is implemented with a few very specific request
 commands to handle setting up your wifi.
 
-An important limitation to note is that the messages are limited to 256 characters max. This should not pose a problem for a typical use-case of this protocol.
+### BLE Packet Size Limitations
+
+BLE UART has a hard limit of **256 bytes per TX packet**. The protocol reassembles packets into complete messages delimited by `\r`. A message buffer of up to **1024 bytes** is maintained internally.
+
+**Recommendations:**
+- Keep TX packets to **128 bytes or less** for reliable delivery.
+- Terminate each message with `\r` to trigger processing.
+- A single complete message (after reassembly) must fit within the 1024-byte buffer.
+
+**For `write_file`:**
+- Each `write_file` request (the full JSON command) must fit within the 1024-byte message buffer.
+- Limit individual `write_file` commands to ~800 bytes of base64-encoded data to leave room for JSON overhead.
+- To transfer files larger than ~600 bytes of raw data, use multiple `write_file` calls (first with `truncate: true`, subsequent with `truncate: false` or omitted).
+- Each `write_file` request must still be sent in smaller TX packets (≤128 bytes recommended), terminated with `\r` at the end of the full JSON command.
 
 To play with BLE Uart mode, the mobile app `nRF Toolbox` in the [App Store](https://apps.apple.com/us/app/nrf-toolbox/id820906058) / [Play Store](https://play.google.com/store/apps/details?id=no.nordicsemi.android.nrftoolbox&hl=en_US&gl=US) can be used to send and receive messages.
+
+On Linux, the [python-ble-serial](https://pypi.org/project/python-ble-serial/) utility can be used. First run `ble-scan` to find your device MAC address, then connect:
+```sh
+ble-serial -d <MAC> -s 6E400001-B5A3-F393-E0A9-E50E24DCCA9E --write-with-response
+```
+
+Or use the [Web Device CLI](https://wiki.makerdiary.com/web-device-cli/), a PWA BLE serial app that runs in Chrome.
 
 ## Install ONLY BLE Support
 If you wish to include ONLY blue wifi provisioning support, and not bother with any of the html based setup, you can install just the blue support packages and files, reducing the install footprint.
@@ -222,6 +242,8 @@ A response for a request will have the request code echoed back, as well as a re
 
 While the module is async, a request will return a response before another request is accepted.  With the echo-back field of the response model, this protocol has the appearance of being totally async, but it is not.  It is semi-blocking sequential.  Semi-Blocking since the network calls themselves are blocking.
 
+By design, each request/response message is small enough to fit inside a single BLE packet (except the write file command).  However, each request and response message will be terminated with a (\r\n) character.  If you neglect to include the trailing (\n), your request model will not be processed. The response models are again, designed to fit inside a single packet, however a trailing (\r) will be included non the less.
+
 ### Response codes
 - `ok`:  You expect a valid set of fields in the json for the given request.
 - `error`: An error was triggered. see the included `msg` field for more info.
@@ -231,12 +253,12 @@ While the module is async, a request will return a response before another reque
 ### Request: `get_device_info`
 #### Request
 ```json
-{"req": "get_device_info"}
+{"req": "get_device_info"}\r
 ```
 #### Response
 Will include the `deviceName` provided to the blesetup.setupWifi() function, and the `deviceInfo` dict values.
 ```json
-{"resp": "get_device_info", "resp_code": "ok", "device_name": "MyPyDevice", "uuid": "123456"}
+{"resp": "get_device_info", "resp_code": "ok", "device_name": "MyPyDevice", "uuid": "123456"}\r
 ```
 
 ### Request: `get_available_wifi`
@@ -244,7 +266,7 @@ Due to the 256 character limit of the UART characteristic, the request will retu
 
 #### Request
 ```json
-{"req": "get_available_wifi"}
+{"req": "get_available_wifi"}\r
 ```
 
 #### Response
@@ -258,16 +280,16 @@ Expected Response Fields:
   - 3 = WPA2-PSK
   - 4 = WPA/WPA2-PSK
 ```json
-{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "My Wifi", "rssi": -71, "secure": 4}
+{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "My Wifi", "rssi": -71, "secure": 4}\r
 ```
 ```json
-{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Bobs Wifi", "rssi": -56, "secure": 4}
+{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Bobs Wifi", "rssi": -56, "secure": 4}\r
 ```
 ```json
-{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Janes Public", "rssi": -46, "secure": 0}
+{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Janes Public", "rssi": -46, "secure": 0}\r
 ```
 ```json
-{"resp": "get_available_wifi", "resp_code": "done"}
+{"resp": "get_available_wifi", "resp_code": "done"}\r
 ```
 
 
@@ -276,35 +298,83 @@ Request to connect to a wifi.
 The `ssid` and `password` fields are both required, even for an open wifi.  If you are connecting to an unsecure open wifi, just pass a null password value.
 #### Request (protected)
 ```json
-{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "abc123"}
+{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "abc123"}\r
 ```
 #### Request (open)
 ```json
-{"req": "connect_to_wifi", "ssid": "My Wifi", "password": null}
+{"req": "connect_to_wifi", "ssid": "My Wifi", "password": null}\r
 ```
 
 #### Response
 A success response will include your assigned IP address.
 ```json
-{"resp": "connect_to_wifi", "resp_code": "ok", "ip_addr": "192.168.0.142"}
+{"resp": "connect_to_wifi", "resp_code": "ok", "ip_addr": "192.168.0.142"}\r
 ```
 
 Connection Failures will look like
 ```json
-{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Incorrect Password"}
+{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Incorrect Password"}\r
 ```
 
 ### Request: `complete`
 Send the `complete` request, to tell the blesetup system to shutdown and fall out of the await. If the blesetup function included `resetDeviceWhenSetupComplete=True`, then this call will result in the device being reset.
 
-### Request
+#### Request
 ```json
-{"req": "complete"}
+{"req": "complete"}\r
 ```
 
-### Response
+#### Response
 ```json
-{"resp": "complete", "resp_code": "ok"}
+{"resp": "complete", "resp_code": "ok"}\r
+```
+
+### Request: `write_file`
+Write a data chunk to a file on the device filesystem. The `data` field must be base64-encoded. The device decodes the base64 and writes the raw bytes to the file. Use `truncate: true` on the first chunk to create/overwrite the file, then `truncate: false` (or omit) on subsequent chunks to append.
+
+#### Request (first chunk, truncate)
+This writes "Hello World" to the file hello.txt
+```json
+TX: {"req": "write_file", "filename": "/hello.txt", "data": "SGVsbG8gV29ybGQ=", "truncate": true}\r
+RX: {"resp": "write_file", "bytes": 11, "size": 11, "resp_code": "ok"} 
+TX: {"req": "file_hash", "filename": "/hello.txt"}\r
+RX: {"resp": "file_hash", "resp_code": "ok", "hash": "b10a8db164e0754105b7a99be72e3fe5"}\r
+```
+
+#### Request (add subsequent chunk, append)
+This adds "some more" to the content of the file hello.txt
+```json
+TX: {"req": "write_file", "filename": "hello.txt", "data": "c29tZSBtb3Jl"}\r
+RX: {"resp": "write_file", "size": 20, "written": 9, "resp_code": "ok"}
+TX: {"req": "file_hash", "filename": "/hello.txt"}
+RX: {"hash": "56037c01e47db3e129234f198db05289", "resp": "file_hash", "resp_code": "ok"}
+
+```
+
+### Request: `file_hash`
+Return the MD5 hex digest of a file's contents. Useful for verifying file transfers.
+
+#### Request
+```json
+{"req": "file_hash", "filename": "/hello.txt"}\r
+```
+
+#### Response
+```json
+{"resp": "file_hash", "resp_code": "ok", "hash": "b10a8db164e0754105b7a99be72e3fe5"}\r
+```
+
+### Request: `delete_file`
+Delete a file from the device filesystem.
+
+#### Request
+```json
+{"req": "delete_file", "filename": "/hello.txt"}\r
+```
+
+#### Response
+```json
+{"resp": "delete_file", "resp_code": "ok"}\r
 ```
 
 ## Try it out with
@@ -316,26 +386,25 @@ pipenv run example_ble
 ### Example Message Sequence
 Plug in the values to match your local wifi, but you can try this sequence with the uRF toolbox mobile app.
 ```
-TX:{"req": "get_device_info"}
-RX:{"resp": "get_device_info", "resp_code": "ok", "device_name": "MyPyDevice", "uuid": "123456"}
+TX:{"req": "get_device_info"}\r
+RX:{"resp": "get_device_info", "resp_code": "ok", "device_name": "MyPyDevice", "uuid": "123456"}\r\n
 
-TX:{"req": "get_available_wifi"}
-RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "My Wifi", "rssi": -71, "secure": 4}
-RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Bobs Wifi", "rssi": -56, "secure": 4}
-RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Janes Public", "rssi": -46, "secure": 0}
-RX:{"resp": "get_available_wifi", "resp_code": "done"}
+TX:{"req": "get_available_wifi"}\r
+RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "My Wifi", "rssi": -71, "secure": 4}\r\n
+RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Bobs Wifi", "rssi": -56, "secure": 4}\r\n
+RX:{"resp": "get_available_wifi", "resp_code": "ok", "ssid": "Janes Public", "rssi": -46, "secure": 0}\r\n
+RX:{"resp": "get_available_wifi", "resp_code": "done"}\r\n
 
-TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "Bad Password"}
-RX:{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Timed Out"}
-TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": null}
-RX:{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Unable to Connect"}
-TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "abc123"}
-RX:{"resp": "connect_to_wifi", "resp_code": "ok", "ip_addr": "192.168.0.142"}
+TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "Bad Password"}\r
+RX:{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Timed Out"}\r\n
+TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": null}\r
+RX:{"resp": "connect_to_wifi", "resp_code": "error", "msg": "Unable to Connect"}\r\n
+TX:{"req": "connect_to_wifi", "ssid": "My Wifi", "password": "abc123"}\r
+RX:{"resp": "connect_to_wifi", "resp_code": "ok", "ip_addr": "192.168.0.142"}\r\n
 
-TX:{"req": "complete"}
-RX:{"resp": "complete", "resp_code": "ok"}
+TX:{"req": "complete"}\r
+RX:{"resp": "complete", "resp_code": "ok"}\r\n
 ```
-
 
 ##
 
