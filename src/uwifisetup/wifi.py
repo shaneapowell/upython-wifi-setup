@@ -6,7 +6,7 @@ import uwifisetup.log as log
 import uwifisetup.util as util
 
 
-CREDS_FILE = "/creds.json"
+CREDS_FILE = "/wifi_creds.json"
 _KEY_SSID = "ssid"
 _KEY_PWD = "pwd"
 

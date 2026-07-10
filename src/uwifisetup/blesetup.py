@@ -8,7 +8,7 @@ import json
 import network   # type:ignore [import-not-found]
 import time
 import machine  # type:ignore [import-not-found]
-import ubinascii # type:ignore [import-not-found]
+import ubinascii  # type:ignore [import-not-found]
 from micropython import const  # type:ignore [import-not-found]
 
 
