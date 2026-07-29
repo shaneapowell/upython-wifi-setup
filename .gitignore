@@ -1,5 +1,5 @@
 src/**/*.mpy
-src/www/*.py
+src/www/_uwifisetup/*.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
