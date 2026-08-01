@@ -152,9 +152,34 @@ async def startUART(
                     if connection.is_connected():
                         send(_makeErrorResponse(req=None, msg=f"Unexpected Error: {type(e).__name__}: {e}"))
 
-                asyncio.sleep_ms(10)
+                await asyncio.sleep_ms(10)
 
     log.info(__name__, "BLE UART stopped")
+
+
+def makeResponse(req: str, values: dict | None = None, code: str = CODE_OK) -> dict:
+    """
+    Make a generic response message to be sent via the send() function
+    """
+    resp = {}
+    resp[FIELD_RESP] = req
+    resp[FIELD_RESP_CODE] = code
+
+    if values is not None:
+        resp = resp | values
+
+    return resp
+
+
+def makeErrorResponse(req: str | None, msg: str) -> dict:
+    """
+    Make an error resposne to be sent over the send() function
+    """
+    resp = {}
+    resp[FIELD_RESP] = req or "ERR"
+    resp[FIELD_RESP_CODE] = CODE_ERROR
+    resp[FIELD_MSG] = msg
+    return resp
 
 
 def send(responseDict: dict):

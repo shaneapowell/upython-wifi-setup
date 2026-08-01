@@ -98,24 +98,6 @@ async def setupWifi(
         machine.reset()
 
 
-def _makeResponse(req: str, values: dict | None = None, code: str = CODE_OK) -> dict:
-    resp = {}
-    resp[FIELD_RESP] = req
-    resp[FIELD_RESP_CODE] = code
-
-    if values is not None:
-        resp = resp | values
-
-    return resp
-
-
-def _makeErrorResponse(req: str | None, msg: str) -> dict:
-    resp = {}
-    resp[FIELD_RESP] = req or "ERR"
-    resp[FIELD_RESP_CODE] = CODE_ERROR
-    resp[FIELD_MSG] = msg
-    return resp
-
 
 def _handleAvailableWifi():
     _wlan.active(True)
@@ -132,9 +114,9 @@ def _handleAvailableWifi():
     for res in scanResult:
         if res[FIELD_SSID] not in uniqueNames:
             uniqueNames.add(res[FIELD_SSID])
-            ble.send(_makeResponse(req=REQ_GET_AVAILABLE_WIFI, values=res))
+            ble.send(ble.makeResponse(req=REQ_GET_AVAILABLE_WIFI, values=res))
 
-    ble.send(_makeResponse(req=REQ_GET_AVAILABLE_WIFI, code=CODE_DONE))
+    ble.send(ble.makeResponse(req=REQ_GET_AVAILABLE_WIFI, code=CODE_DONE))
 
 
 def _handleConnectWifi(reqModel: dict):
@@ -146,14 +128,14 @@ def _handleConnectWifi(reqModel: dict):
         missingField = FIELD_PASSWORD
 
     if missingField is not None:
-        ble.send(_makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg=f"Missing Json Field [{missingField}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg=f"Missing Json Field [{missingField}]"))
         return
 
     ssid = reqModel[FIELD_SSID]
     password = reqModel[FIELD_PASSWORD]
 
     if ssid is None or len(ssid) <= 0:
-        ble.send(_makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg=f"[{FIELD_SSID}]] cannot be empty"))
+        ble.send(ble.makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg=f"[{FIELD_SSID}]] cannot be empty"))
         return
 
     try:
@@ -179,22 +161,22 @@ def _handleConnectWifi(reqModel: dict):
                 break
 
         if sleepTime == -1:
-            ble.send(_makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="Timed Out"))
+            ble.send(ble.makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="Timed Out"))
         else:
             if result == network.STAT_GOT_IP:
                 log.info(__name__, f"Connected to [{ssid}] @ {_wlan.ifconfig()}")
                 wifi.saveCredentials(ssid, password)
-                ble.send(_makeResponse(req=REQ_CONNECT_TO_WIFI, values={FIELD_IP_ADDR: _wlan.ifconfig()[0]}))
+                ble.send(ble.makeResponse(req=REQ_CONNECT_TO_WIFI, values={FIELD_IP_ADDR: _wlan.ifconfig()[0]}))
             elif result == network.STAT_WRONG_PASSWORD:
-                ble.send(_makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="Password Error"))
+                ble.send(ble.makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="Password Error"))
             elif result == network.STAT_NO_AP_FOUND:
-                ble.send(_makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="Wifi Not In Range"))
+                ble.send(ble.makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="Wifi Not In Range"))
             else:
-                ble.send(_makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="General Error"))
+                ble.send(ble.makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg="General Error"))
 
     except Exception as e:
         log.error(__name__, f"Unexpected Exception connecting to wifi {e}", e)
-        ble.send(_makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg=f"Unexpected Exception [{e}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_CONNECT_TO_WIFI, msg=f"Unexpected Exception [{e}]"))
 
 
 def _normalizeFilename(filename: str) -> str:
@@ -212,7 +194,7 @@ def _handleWriteFile(reqModel: dict):
         missingField = FIELD_DATA
 
     if missingField is not None:
-        ble.send(_makeErrorResponse(req=REQ_WRITE_FILE, msg=f"Missing Json Field [{missingField}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_WRITE_FILE, msg=f"Missing Json Field [{missingField}]"))
         return
 
     filename = _normalizeFilename(reqModel[FIELD_FILENAME])
@@ -222,7 +204,7 @@ def _handleWriteFile(reqModel: dict):
     try:
         decoded = ubinascii.a2b_base64(data)
     except Exception as e:
-        ble.send(_makeErrorResponse(req=REQ_WRITE_FILE, msg=f"Invalid base64 data: [{e}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_WRITE_FILE, msg=f"Invalid base64 data: [{e}]"))
         return
 
     try:
@@ -230,32 +212,32 @@ def _handleWriteFile(reqModel: dict):
         with open(filename, mode) as f:
             f.write(decoded)
         log.info(__name__, f"write_file [{filename}] {'truncate' if truncate else 'append'} {len(decoded)} bytes")
-        ble.send(_makeResponse(req=REQ_WRITE_FILE, values={FIELD_WRITTEN: len(decoded), FIELD_SIZE: util.file_size(filename)}))
+        ble.send(ble.makeResponse(req=REQ_WRITE_FILE, values={FIELD_WRITTEN: len(decoded), FIELD_SIZE: util.file_size(filename)}))
     except Exception as e:
-        ble.send(_makeErrorResponse(req=REQ_WRITE_FILE, msg=f"Failed to write file: [{e}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_WRITE_FILE, msg=f"Failed to write file: [{e}]"))
 
 
 def _handleFileHash(reqModel: dict):
     if FIELD_FILENAME not in reqModel:
-        ble.send(_makeErrorResponse(req=REQ_FILE_HASH, msg=f"Missing Json Field [{FIELD_FILENAME}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_FILE_HASH, msg=f"Missing Json Field [{FIELD_FILENAME}]"))
         return
 
     filename = _normalizeFilename(reqModel[FIELD_FILENAME])
 
     if not util.file_exists(filename):
-        ble.send(_makeErrorResponse(req=REQ_FILE_HASH, msg=f"File not found: [{filename}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_FILE_HASH, msg=f"File not found: [{filename}]"))
         return
 
     try:
         h = util.file_hash(filename)
-        ble.send(_makeResponse(req=REQ_FILE_HASH, values={FIELD_HASH: h}))
+        ble.send(ble.makeResponse(req=REQ_FILE_HASH, values={FIELD_HASH: h}))
     except Exception as e:
-        ble.send(_makeErrorResponse(req=REQ_FILE_HASH, msg=f"Failed to hash file: [{e}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_FILE_HASH, msg=f"Failed to hash file: [{e}]"))
 
 
 def _handleDeleteFile(reqModel: dict):
     if FIELD_FILENAME not in reqModel:
-        ble.send(_makeErrorResponse(req=REQ_DELETE_FILE, msg=f"Missing Json Field [{FIELD_FILENAME}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_DELETE_FILE, msg=f"Missing Json Field [{FIELD_FILENAME}]"))
         return
 
     filename = _normalizeFilename(reqModel[FIELD_FILENAME])
@@ -263,11 +245,11 @@ def _handleDeleteFile(reqModel: dict):
     try:
         if util.file_delete(filename):
             log.info(__name__, f"delete_file [{filename}]")
-            ble.send(_makeResponse(req=REQ_DELETE_FILE))
+            ble.send(ble.makeResponse(req=REQ_DELETE_FILE))
         else:
-            ble.send(_makeErrorResponse(req=REQ_DELETE_FILE, msg=f"File not found: [{filename}]"))
+            ble.send(ble.makeErrorResponse(req=REQ_DELETE_FILE, msg=f"File not found: [{filename}]"))
     except Exception as e:
-        ble.send(_makeErrorResponse(req=REQ_DELETE_FILE, msg=f"Failed to delete file: [{e}]"))
+        ble.send(ble.makeErrorResponse(req=REQ_DELETE_FILE, msg=f"Failed to delete file: [{e}]"))
 
 
 async def _processRequest(reqModel: dict, deviceName: str, deviceInfo: dict = {}, customHandler=_defaultCustomHandler):
@@ -277,18 +259,18 @@ async def _processRequest(reqModel: dict, deviceName: str, deviceInfo: dict = {}
     Unknown requests are passed to customHandler.
     """
     if reqModel is None:
-        ble.send(_makeErrorResponse(req=None, msg="Received Empty Request"))
+        ble.send(ble.makeErrorResponse(req=None, msg="Received Empty Request"))
         return
 
     if FIELD_REQ not in reqModel:
-        ble.send(_makeErrorResponse(req=None, msg=f"Missing [{FIELD_REQ}]"))
+        ble.send(ble.makeErrorResponse(req=None, msg=f"Missing [{FIELD_REQ}]"))
         return
 
     req = reqModel[FIELD_REQ]
 
     if req == REQ_GET_DEVICE_INFO:
         ble.send(
-            _makeResponse(
+            ble.makeResponse(
                 req=req,
                 values={FIELD_DEVICE_NAME: deviceName} | deviceInfo
             )
@@ -304,7 +286,7 @@ async def _processRequest(reqModel: dict, deviceName: str, deviceInfo: dict = {}
         return
 
     if req == REQ_COMPLETE:
-        ble.send(_makeResponse(req=req))
+        ble.send(ble.makeResponse(req=req))
         asyncio.sleep_ms(200)
         ble.stop()
         return
@@ -324,4 +306,4 @@ async def _processRequest(reqModel: dict, deviceName: str, deviceInfo: dict = {}
     if customHandler is not _defaultCustomHandler:
         await customHandler(req, reqModel)
     else:
-        ble.send(_makeErrorResponse(req=req, msg="Unknown Request"))
+        ble.send(ble.makeErrorResponse(req=req, msg="Unknown Request"))
