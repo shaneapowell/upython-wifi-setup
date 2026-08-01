@@ -40,7 +40,7 @@ CODE_ERROR = 'error'
 _wlan = network.WLAN(network.STA_IF)
 
 
-async def _defaultCustomHandler(reqModel: dict) -> bool | None:
+async def _defaultCustomHandler(req: str, reqModel: dict) -> bool | None:
     """
     Default custom handler for BLE WiFi setup — does nothing. Override with your own.
 
@@ -322,6 +322,6 @@ async def _processRequest(reqModel: dict, deviceName: str, deviceInfo: dict = {}
         return
 
     if customHandler is not _defaultCustomHandler:
-        await customHandler(reqModel)
+        await customHandler(req, reqModel)
     else:
         ble.send(_makeErrorResponse(req=req, msg="Unknown Request"))

@@ -119,6 +119,7 @@ _mppush_raw:
 
 _deploy_deps:
 	mpremote mip install github:shaneapowell/upython-wifi-setup/package-deps.json
+	mpremote mip install aioble
 
 _mpclean:
 	rshell -p $(USB_DEVICE) "rm -r /pyboard/*"

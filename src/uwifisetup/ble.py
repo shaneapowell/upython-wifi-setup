@@ -37,6 +37,9 @@ async def _defaultHandler(reqModel: dict) -> bool | None:
 
     Return True (or None) if you handled the request.
     Return False if you did not (ble.py will log a warning).
+
+    req is the string req in the json body
+    repModel is every other field (including the req field) in a dict
     """
     return None
 
