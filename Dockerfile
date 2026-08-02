@@ -1,10 +1,12 @@
 FROM python:3.11-slim AS dev
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    expect \
     gcc \
     git \
     make \
     micropython \
+    bluez \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install \
@@ -15,7 +17,9 @@ RUN pip install \
     rshell \
     pydoc-markdown \
     micropython-esp32-stubs \
-    tox
+    tox \
+    ble-serial \
+    pyserial
 
 WORKDIR /work
 

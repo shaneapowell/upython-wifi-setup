@@ -7,7 +7,11 @@ services:
     command: ["tail", "-f", "/dev/null"]
     volumes:
       - .:/work
+      - /run/dbus:/run/dbus:ro
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
     working_dir: /work
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
       - "/dev/ttyACM0:/dev/ttyACM0"
+    network_mode: host

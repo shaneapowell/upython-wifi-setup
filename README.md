@@ -215,6 +215,17 @@ ble-serial -d <MAC> -s 6E400001-B5A3-F393-E0A9-E50E24DCCA9E --write-with-respons
 
 Or use the [Web Device CLI](https://wiki.makerdiary.com/web-device-cli/), a PWA BLE serial app that runs in Chrome.
 
+### Using the dev container BLE tools
+
+If you're using the Docker dev environment, `ble-scan` and `ble-serial` are available inside the container. Use the `make` targets to scan for devices and open an interactive terminal:
+
+```sh
+make ble-scan                          # list nearby BLE devices
+make ble-uart MAC=<MAC_ADDRESS>        # open interactive BLE UART terminal
+```
+
+`make ble-uart` spawns `ble-serial` in the background and opens `miniterm` on the virtual PTY. Exit with `Ctrl+]` (miniterm default).
+
 ## Install ONLY BLE Support
 If you wish to include ONLY blue wifi provisioning support, and not bother with any of the html based setup, you can install just the blue support packages and files, reducing the install footprint.
 With this install, there are no asset files installed, just the .mpy or .py files.

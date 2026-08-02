@@ -106,7 +106,7 @@ _validate:
 # Device targets (run inside container)
 # ==============================================================================
 
-.PHONY: _mppush _mppush_raw _deploy_deps _mpclean _mpls _mprepl _mprshell _mprun _mpreset
+.PHONY: _mppush _mppush_raw _deploy_deps _mpclean _mpls _mprepl _mprshell _mprun _mpreset _blescan _bleuart
 
 _mppush: _build
 	rshell -p $(USB_DEVICE) "rsync $(DIST_DIR)/uwifisetup /pyboard/lib/uwifisetup"
@@ -142,11 +142,20 @@ endif
 _mpreset:
 	mpremote $(MPREMOTE_DEVICE) reset
 
+_blescan:
+	ble-scan
+
+_bleuart:
+ifeq ($(origin MAC),undefined)
+	$(error Usage: make _bleuart MAC=<mac_address>)
+endif
+	python3 tools/ble-uart-term.py $(MAC)
+
 # ==============================================================================
 # Docker wrapper targets (run outside container)
 # ==============================================================================
 
-.PHONY: up down build clean lint typecheck test etest htest validate deploy deploy_raw deploy_deps mpclean mpls mprepl mpshell mprun mpreset run_example run_example_ble run_example_reset shell
+.PHONY: up down build clean lint typecheck test etest htest validate deploy deploy_raw deploy_deps mpclean mpls mprepl mpshell mprun mpreset run_example run_example_ble run_example_reset shell ble-scan ble-uart scorched-earth
 
 up:
 	@$(DC) up -d dev
@@ -221,3 +230,13 @@ run_example_reset: up
 
 shell: up
 	@$(DC) exec -it dev bash
+
+ble-scan: up
+	@$(DC) exec -it dev make _blescan
+
+ble-uart: up
+	@$(DC) exec -it dev make _bleuart MAC=$(MAC)
+
+scorched-earth: clean down
+	@$(DC) rm -f
+	@docker image rm $(shell $(DC) config --images 2>/dev/null) 2>/dev/null || true

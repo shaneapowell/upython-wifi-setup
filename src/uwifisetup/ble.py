@@ -154,6 +154,8 @@ async def startUART(
 
                 await asyncio.sleep_ms(10)
 
+            log.info(__name__, "Connection Lost")
+
     log.info(__name__, "BLE UART stopped")
 
 
