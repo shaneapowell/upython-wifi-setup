@@ -287,7 +287,7 @@ async def _processRequest(reqModel: dict, deviceName: str, deviceInfo: dict = {}
 
     if req == REQ_COMPLETE:
         ble.send(ble.makeResponse(req=req))
-        asyncio.sleep_ms(200)
+        await asyncio.sleep_ms(500)
         ble.stop()
         return
 
