@@ -21,6 +21,7 @@ _UART_RX = bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
 _GENERIC_COMPUTER = const(0x002)
 _ADV_INTERVAL_US = const(250000)
 _MAX_BUFFER_SIZE = const(1024)
+_MAX_TX_PAYLOAD_SIZE = const(220)
 _RX_TRIGGER_CHAR = '\r'
 
 _txChar: aioble.Characteristic = None  # type:ignore [assignment]
@@ -199,8 +200,9 @@ def send(responseDict: dict):
 
     rawResp = json.dumps(responseDict)
     log.info(__name__, f"tx: {rawResp}")
-    rawResp += '\r\n'
-    _txChar.write(data=rawResp, send_update=True)
+    rawResp += _RX_TRIGGER_CHAR + '\n'
+    for i in range(0, len(rawResp), _MAX_TX_PAYLOAD_SIZE):
+        _txChar.write(data=rawResp[i:i + _MAX_TX_PAYLOAD_SIZE], send_update=True)
 
 
 def stop():
